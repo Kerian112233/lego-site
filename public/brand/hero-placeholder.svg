@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Placeholder hero" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7dd3c8"/>
+      <stop offset="1" stop-color="#e7f2f0"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#sky)"/>
+  <circle cx="640" cy="140" r="70" fill="#fcd34d" opacity="0.85"/>
+  <path d="M0 470 Q200 430 400 470 T800 470 V600 H0 Z" fill="#0d9488" opacity="0.25"/>
+  <path d="M0 520 Q220 490 420 525 T800 515 V600 H0 Z" fill="#0d9488" opacity="0.4"/>
+  <g fill="none" stroke="#0f766e" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="300" cy="420" r="46"/>
+    <circle cx="500" cy="420" r="46"/>
+    <path d="M300 420 L378 420 L416 330 L470 330"/>
+    <path d="M416 330 L452 420 L500 420"/>
+    <path d="M470 330 L494 292 L534 292"/>
+    <path d="M378 420 C346 348 346 306 408 304 L470 304"/>
+  </g>
+</svg>

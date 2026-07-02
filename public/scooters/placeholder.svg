@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Scooter">
+  <rect width="400" height="300" fill="#e7f2f0"/>
+  <g fill="none" stroke="#0d9488" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="110" cy="205" r="38"/>
+    <circle cx="300" cy="205" r="38"/>
+    <path d="M110 205 L175 205 L205 140 L250 140"/>
+    <path d="M205 140 L235 205 L300 205"/>
+    <path d="M250 140 L270 110 L300 110"/>
+    <path d="M175 205 C 150 150 150 120 200 118 L 250 118"/>
+  </g>
+</svg>

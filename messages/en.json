@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "home": "Home",
+    "scooters": "Scooters",
+    "book": "Book",
+    "menu": "Menu"
+  },
+  "actions": {
+    "bookNow": "Book now",
+    "viewScooters": "View scooters",
+    "contactWhatsApp": "Contact on WhatsApp",
+    "backHome": "Back to home",
+    "seeAll": "See all"
+  },
+  "catalog": {
+    "perDay": "/ day",
+    "perWeek": "/ week",
+    "perMonth": "/ month",
+    "from": "From",
+    "cc": "cc",
+    "bookThisModel": "Book this model",
+    "filterLabel": "Category",
+    "allCategories": "All",
+    "results": "{count, plural, =0 {No scooters} one {# scooter} other {# scooters}}",
+    "noResults": "No models match this filter."
+  },
+  "form": {
+    "title": "Booking request",
+    "fullName": "Full name",
+    "nationality": "Nationality",
+    "email": "Email",
+    "phone": "WhatsApp number",
+    "model": "Preferred model",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "pickupZone": "Delivery zone",
+    "pickupAddress": "Address / hotel",
+    "message": "Message",
+    "submit": "Send via WhatsApp",
+    "submitting": "Opening WhatsApp…",
+    "optional": "optional",
+    "selectModel": "Select a model",
+    "selectZone": "Select a zone",
+    "redirectNote": "On submit, you'll be redirected to WhatsApp with a pre-filled message.",
+    "errors": {
+      "required": "Required field",
+      "dateOrder": "The end date must be after the start date.",
+      "datePast": "The date cannot be in the past.",
+      "email": "Invalid email address."
+    }
+  },
+  "whatsapp": {
+    "floatingLabel": "Need help? Message us",
+    "bookingMessage": "Hello, I'd like to rent a {model} from {startDate} to {endDate}. Delivery: {zone}. Name: {name}. Ref: {reference}.",
+    "contactMessage": "Hello, I have a few questions about renting a scooter."
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "hours": "Opening hours",
+    "contact": "Contact",
+    "navigation": "Navigation"
+  },
+  "language": {
+    "label": "Language",
+    "fr": "Français",
+    "en": "English"
+  }
+}
