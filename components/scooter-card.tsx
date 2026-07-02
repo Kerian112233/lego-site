@@ -22,9 +22,10 @@ export function ScooterCard({
   return (
     <Card className="flex h-full flex-col overflow-hidden pt-0">
       <div className="relative aspect-[4/3] bg-muted">
+        {/* image_url peut être vide (photo pas encore fournie) → placeholder neutre. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={model.image_url}
+          src={model.image_url || '/scooters/placeholder.svg'}
           alt={model.name}
           loading="lazy"
           className="size-full object-cover"

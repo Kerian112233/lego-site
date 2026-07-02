@@ -1,115 +1,135 @@
 import type {ScooterModel} from '../types';
 
 /**
- * Fixture Phase 1 : catalogue mock typé EXACTEMENT comme la vue
- * `public_scooter_models` (§5.1). Vit derrière le data layer (models.ts) —
- * les composants ne l'importent jamais en direct.
+ * Flotte LEXO réelle — dérivée de docs/… (CSV fourni par le client).
+ * Le site est un catalogue par MODÈLE : les 105 unités du CSV sont regroupées
+ * en 7 modèles (code/plaque/couleur/options/statut ignorés).
  *
- * Phase 2 : cette fixture disparaît, `getScooterModels()` lira Supabase.
- * (Prix en THB/jour, contexte Phuket. Images = placeholder à remplacer.)
+ * Type STRICT = ScooterModel (§5.1), aucun champ en plus → swap Supabase trivial.
+ *
+ * TODO client :
+ *  - prix : price_per_day = tarifs provisoires fournis ; week/month à définir.
+ *  - description_fr/en : brouillons à relire (// TODO desc).
+ *  - image_url : vides tant que les photos publiques ne sont pas fournies (// TODO image).
  */
 export const mockScooterModels: ScooterModel[] = [
   {
     id: '11111111-1111-1111-1111-111111111101',
-    name: 'Honda Click 125i',
+    name: 'Honda ADV160',
     brand: 'Honda',
-    category: 'Automatique 125cc',
-    cc: 125,
+    category: 'ADV 160cc',
+    cc: 160,
     description_fr:
-      'Le scooter urbain par excellence : léger, économique et parfait pour se faufiler dans Patong.',
+      'Le SUV des scooters : look aventure, position haute et agilité en ville comme sur les routes de l’île.', // TODO desc
     description_en:
-      'The go-to city scooter: light, fuel-efficient and perfect for weaving through Patong.',
-    price_per_day: 250,
-    price_per_week: 1400,
-    price_per_month: 3500,
-    image_url: '/scooters/placeholder.svg',
+      'The SUV of scooters: adventure looks, an upright ride and agility both in town and on the island’s roads.', // TODO desc
+    price_per_day: 400,
+    price_per_week: null,
+    price_per_month: null,
+    image_url: '', // TODO image
     sort_order: 1,
     is_active: true
   },
   {
     id: '11111111-1111-1111-1111-111111111102',
-    name: 'Yamaha NMAX 155',
-    brand: 'Yamaha',
-    category: 'Automatique 155cc',
-    cc: 155,
+    name: 'Honda X-ADV 750',
+    brand: 'Honda',
+    category: 'Maxi-scooter',
+    cc: 750,
     description_fr:
-      'Confort et puissance pour explorer toute l’île, y compris les routes de colline vers Kata et Karon.',
+      'Maxi-trail bicylindre à boîte automatique DCT, pour avaler les distances avec caractère.', // TODO desc
     description_en:
-      'Comfort and power to explore the whole island, including the hill roads to Kata and Karon.',
-    price_per_day: 350,
-    price_per_week: 2000,
-    price_per_month: 5000,
-    image_url: '/scooters/placeholder.svg',
+      'Twin-cylinder maxi-trail with automatic DCT gearbox, built to cover distance with character.', // TODO desc
+    price_per_day: 1200,
+    price_per_week: null,
+    price_per_month: null,
+    image_url: '', // TODO image
     sort_order: 2,
     is_active: true
   },
   {
     id: '11111111-1111-1111-1111-111111111103',
-    name: 'Honda PCX 160',
-    brand: 'Honda',
-    category: 'Automatique 160cc',
-    cc: 160,
+    name: 'Yamaha TMAX 560',
+    brand: 'Yamaha',
+    category: 'Maxi-scooter',
+    cc: 560,
     description_fr:
-      'Le best-seller : coffre spacieux, tenue de route irréprochable, idéal pour les trajets à deux.',
+      'L’icône des maxi-scooters sportifs : puissance, tenue de route et confort sur les longs trajets.', // TODO desc
     description_en:
-      'The best-seller: roomy under-seat storage, rock-solid handling, ideal for riding two-up.',
-    price_per_day: 400,
-    price_per_week: 2300,
-    price_per_month: 5800,
-    image_url: '/scooters/placeholder.svg',
+      'The iconic sport maxi-scooter: power, handling and comfort on longer rides.', // TODO desc
+    price_per_day: 1200,
+    price_per_week: null,
+    price_per_month: null,
+    image_url: '', // TODO image
     sort_order: 3,
     is_active: true
   },
   {
     id: '11111111-1111-1111-1111-111111111104',
-    name: 'Yamaha XMAX 300',
+    name: 'Yamaha NMAX 155',
     brand: 'Yamaha',
-    category: 'Maxi-scooter',
-    cc: 300,
+    category: 'Automatique 155cc',
+    cc: 155,
     description_fr:
-      'Maxi-scooter pour les longues distances : Phuket Town, Promthep, l’aéroport, sans effort.',
+      'Compact et économique, parfait pour se faufiler et explorer Phuket au quotidien.', // TODO desc
     description_en:
-      'Maxi-scooter for long distances: Phuket Town, Promthep, the airport — effortlessly.',
-    price_per_day: 700,
-    price_per_week: 4200,
-    price_per_month: 11000,
-    image_url: '/scooters/placeholder.svg',
+      'Compact and economical, perfect for weaving through traffic and exploring Phuket day to day.', // TODO desc
+    price_per_day: 350,
+    price_per_week: null,
+    price_per_month: null,
+    image_url: '', // TODO image
     sort_order: 4,
     is_active: true
   },
   {
     id: '11111111-1111-1111-1111-111111111105',
-    name: 'Honda ADV 160',
+    name: 'Honda ADV350',
     brand: 'Honda',
-    category: 'ADV',
-    cc: 160,
+    category: 'ADV 350cc',
+    cc: 350,
     description_fr:
-      'Look aventure et suspensions surélevées pour les routes moins lisses du nord de l’île.',
+      'L’équilibre idéal entre agilité urbaine et aisance sur route, avec un vrai look aventure.', // TODO desc
     description_en:
-      'Adventure styling and raised suspension for the rougher roads of the island’s north.',
-    price_per_day: 450,
-    price_per_week: 2600,
-    price_per_month: 6500,
-    image_url: '/scooters/placeholder.svg',
+      'The ideal balance of city agility and open-road ease, with genuine adventure styling.', // TODO desc
+    price_per_day: 800,
+    price_per_week: null,
+    price_per_month: null,
+    image_url: '', // TODO image
     sort_order: 5,
     is_active: true
   },
   {
     id: '11111111-1111-1111-1111-111111111106',
-    name: 'Honda Scoopy 110',
-    brand: 'Honda',
-    category: 'Automatique 110cc',
-    cc: 110,
+    name: 'Yamaha XMAX 300',
+    brand: 'Yamaha',
+    category: 'Automatique 300cc',
+    cc: 300,
     description_fr:
-      'Mignon, ultra-maniable et très économique : le premier deux-roues idéal pour débuter.',
+      'Confortable et polyvalent, un maxi-scooter accessible pour rouler à deux sur toute l’île.', // TODO desc
     description_en:
-      'Cute, ultra-nimble and very cheap to run: the ideal first scooter for beginners.',
-    price_per_day: 200,
-    price_per_week: 1100,
-    price_per_month: 2800,
-    image_url: '/scooters/placeholder.svg',
+      'Comfortable and versatile, an accessible maxi-scooter for riding two-up across the island.', // TODO desc
+    price_per_day: 700,
+    price_per_week: null,
+    price_per_month: null,
+    image_url: '', // TODO image
     sort_order: 6,
-    // Exemple d'entrée inactive : ne doit JAMAIS apparaître (filtrée par getScooterModels).
-    is_active: false
+    is_active: true
+  },
+  {
+    id: '11111111-1111-1111-1111-111111111107',
+    name: 'Honda PCX160',
+    brand: 'Honda',
+    category: 'Automatique 160cc',
+    cc: 160, // TODO cc à confirmer (PCX125 vs PCX160)
+    description_fr:
+      'Le best-seller élégant : souple, économe et facile à prendre en main.', // TODO desc
+    description_en:
+      'The elegant best-seller: smooth, fuel-efficient and easy to ride.', // TODO desc
+    price_per_day: 250,
+    price_per_week: null,
+    price_per_month: null,
+    image_url: '', // TODO image
+    sort_order: 7,
+    is_active: true
   }
 ];
