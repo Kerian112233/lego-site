@@ -51,7 +51,9 @@
   },
   "whatsapp": {
     "floatingLabel": "Need help? Message us",
-    "bookingMessage": "Hello, I'd like to rent a {model} from {startDate} to {endDate}. Delivery: {zone}. Name: {name}. Ref: {reference}.",
+    "bookingIntro": "New booking request",
+    "datesLabel": "Dates",
+    "referenceLabel": "Ref",
     "contactMessage": "Hello, I have a few questions about renting a scooter."
   },
   "footer": {

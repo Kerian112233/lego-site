@@ -3,9 +3,10 @@ import {Link} from '@/i18n/navigation';
 import {clientConfig} from '@/config/client';
 import type {Locale} from '@/i18n/routing';
 
-export function SiteFooter({locale: _locale}: {locale: Locale}) {
+export function SiteFooter({locale}: {locale: Locale}) {
   const t = useTranslations();
   const {brand, contact} = clientConfig;
+  const openingHours = clientConfig.content[locale].openingHours;
   const year = new Date().getFullYear();
 
   return (
@@ -47,7 +48,7 @@ export function SiteFooter({locale: _locale}: {locale: Locale}) {
           </ul>
           <p className="mt-4 text-sm font-semibold">{t('footer.hours')}</p>
           <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-            {contact.hours.map((h) => (
+            {openingHours.map((h) => (
               <li key={h.day}>
                 {h.day} · {h.time}
               </li>

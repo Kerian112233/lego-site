@@ -118,6 +118,7 @@ export const fr: SiteContent = {
     title: 'Nous trouver',
     subtitle: 'Passez nous voir ou contactez-nous quand vous voulez.'
   },
+  openingHours: [{day: 'Tous les jours', time: '10:00 – 00:00'}],
   catalog: {
     title: 'Notre flotte de scooters',
     subtitle:

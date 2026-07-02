@@ -30,12 +30,6 @@ export interface ThemeConfig {
   radius: string;
 }
 
-export interface OpeningHours {
-  /** Libellé de jour(s), déjà localisé côté contenu si besoin. */
-  day: string;
-  time: string;
-}
-
 export interface ClientConfig {
   /** URL canonique du site (domaine du client) — sert au SEO (metadataBase, sitemap). */
   site: {
@@ -61,7 +55,6 @@ export interface ClientConfig {
     mapUrl: string;
     /** URL d'embed iframe Google Maps. */
     mapEmbedUrl: string;
-    hours: OpeningHours[];
   };
   booking: {
     /** Préfixe des références lisibles, ex: "LEXO" → LEXO-2026-0042. */
@@ -99,18 +92,14 @@ export const clientConfig: ClientConfig = {
     radius: '0.75rem'
   },
   contact: {
-    // ⚠️ Placeholder — à confirmer avec le client avant mise en ligne (§6).
-    whatsappNumber: '66000000000',
-    phoneDisplay: '+66 00 000 0000',
-    email: 'contact@lexo.example',
-    address: '123 Thaweewong Rd, Patong, Phuket 83150, Thailand',
-    mapUrl: 'https://maps.google.com/?q=Patong+Beach+Phuket',
+    // Numéro WhatsApp international SANS "+". ⚠️ À confirmer (semble court pour un +33).
+    whatsappNumber: '3373954147',
+    phoneDisplay: '+33 73 95 41 47',
+    email: 'contact@lexo.example', // placeholder — à fournir par le client
+    address: '201/6 Na Nai Road, Kathu, Phuket 83150',
+    mapUrl: 'https://maps.google.com/?q=201/6+Na+Nai+Road+Kathu+Phuket+83150',
     mapEmbedUrl:
-      'https://www.google.com/maps?q=Patong+Beach+Phuket&output=embed',
-    hours: [
-      {day: 'Lun–Sam', time: '09:00 – 19:00'},
-      {day: 'Dim', time: '10:00 – 17:00'}
-    ]
+      'https://www.google.com/maps?q=201/6+Na+Nai+Road+Kathu+Phuket+83150&output=embed'
   },
   booking: {
     referencePrefix: 'LEXO'

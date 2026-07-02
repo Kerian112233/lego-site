@@ -115,6 +115,7 @@ export const en: SiteContent = {
     title: 'Find us',
     subtitle: 'Drop by or reach out anytime.'
   },
+  openingHours: [{day: 'Every day', time: '10:00 – 00:00'}],
   catalog: {
     title: 'Our scooter fleet',
     subtitle:

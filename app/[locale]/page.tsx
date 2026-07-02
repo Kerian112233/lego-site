@@ -35,7 +35,7 @@ export default async function HomePage({
       <WhyUs content={content.whyUs} />
       <DeliveryZones content={content.deliveryZones} />
       <Faq content={content.faq} />
-      <HoursMap content={content.hoursMap} />
+      <HoursMap content={content.hoursMap} hours={content.openingHours} />
     </>
   );
 }

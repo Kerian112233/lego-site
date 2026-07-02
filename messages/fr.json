@@ -51,7 +51,9 @@
   },
   "whatsapp": {
     "floatingLabel": "Besoin d’aide ? Écrivez-nous",
-    "bookingMessage": "Bonjour, je souhaite louer un {model} du {startDate} au {endDate}. Livraison : {zone}. Nom : {name}. Réf : {reference}.",
+    "bookingIntro": "Nouvelle demande de réservation",
+    "datesLabel": "Dates",
+    "referenceLabel": "Réf",
     "contactMessage": "Bonjour, j’aurais quelques questions sur la location de scooters."
   },
   "footer": {

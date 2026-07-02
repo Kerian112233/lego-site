@@ -65,6 +65,11 @@ export interface SiteContent {
     title: string;
     subtitle: string;
   };
+  /** Horaires d'ouverture (libellé de jour localisé + plage horaire). */
+  openingHours: {
+    day: string;
+    time: string;
+  }[];
   /** En-tête de la page catalogue /scooters. */
   catalog: {
     title: string;

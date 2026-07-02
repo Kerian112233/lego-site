@@ -125,15 +125,28 @@ export function BookingForm({
       source: 'website'
     };
 
-    const composeMessage = (reference: string) =>
-      tw('bookingMessage', {
-        model: model?.name ?? '',
-        startDate: values.start_date,
-        endDate: values.end_date,
-        zone: values.pickup_zone,
-        name: payload.full_name,
-        reference
-      });
+    // Message WhatsApp structuré : TOUT ce que le client a saisi, pour que LEXO
+    // ait besoin de rien d'autre. Les champs optionnels vides sont omis.
+    const composeMessage = (reference: string) => {
+      const lines: (string | null)[] = [
+        tw('bookingIntro'),
+        '',
+        `${t('fullName')} : ${payload.full_name}`,
+        payload.nationality ? `${t('nationality')} : ${payload.nationality}` : null,
+        `${t('model')} : ${model?.name ?? ''}`,
+        `${tw('datesLabel')} : ${values.start_date} → ${values.end_date}`,
+        `${t('pickupZone')} : ${values.pickup_zone}`,
+        payload.pickup_address
+          ? `${t('pickupAddress')} : ${payload.pickup_address}`
+          : null,
+        `${t('phone')} : ${payload.phone}`,
+        payload.email ? `${t('email')} : ${payload.email}` : null,
+        payload.message ? `${t('message')} : ${payload.message}` : null,
+        '',
+        `${tw('referenceLabel')} : ${reference}`
+      ];
+      return lines.filter((line) => line !== null).join('\n');
+    };
 
     const result = await submitBookingRequest(payload, composeMessage);
     // Redirection WhatsApp réelle (fonctionne sans backend).

@@ -4,7 +4,13 @@ import {Button} from '@/components/ui/button';
 import {clientConfig} from '@/config/client';
 import type {SiteContent} from '@/content/types';
 
-export function HoursMap({content}: {content: SiteContent['hoursMap']}) {
+export function HoursMap({
+  content,
+  hours
+}: {
+  content: SiteContent['hoursMap'];
+  hours: SiteContent['openingHours'];
+}) {
   const t = useTranslations();
   const {contact} = clientConfig;
 
@@ -15,7 +21,7 @@ export function HoursMap({content}: {content: SiteContent['hoursMap']}) {
           <div>
             <p className="text-sm font-semibold">{t('footer.hours')}</p>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-              {contact.hours.map((h) => (
+              {hours.map((h) => (
                 <li key={h.day}>
                   {h.day} · {h.time}
                 </li>
