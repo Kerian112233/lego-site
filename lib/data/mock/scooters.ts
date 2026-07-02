@@ -10,7 +10,7 @@ import type {ScooterModel} from '../types';
  * TODO client :
  *  - prix : price_per_day = tarifs provisoires fournis ; week/month à définir.
  *  - description_fr/en : brouillons à relire (// TODO desc).
- *  - image_url : vides tant que les photos publiques ne sont pas fournies (// TODO image).
+ *  - image_url : photos client dans /public/scooters/ (à remplacer si meilleures dispos).
  */
 export const mockScooterModels: ScooterModel[] = [
   {
@@ -26,7 +26,7 @@ export const mockScooterModels: ScooterModel[] = [
     price_per_day: 400,
     price_per_week: null,
     price_per_month: null,
-    image_url: '', // TODO image
+    image_url: '/scooters/adv160.jpg',
     sort_order: 1,
     is_active: true
   },
@@ -43,7 +43,7 @@ export const mockScooterModels: ScooterModel[] = [
     price_per_day: 1200,
     price_per_week: null,
     price_per_month: null,
-    image_url: '', // TODO image
+    image_url: '/scooters/xadv.jpg',
     sort_order: 2,
     is_active: true
   },
@@ -60,7 +60,7 @@ export const mockScooterModels: ScooterModel[] = [
     price_per_day: 1200,
     price_per_week: null,
     price_per_month: null,
-    image_url: '', // TODO image
+    image_url: '/scooters/tmax.jpg',
     sort_order: 3,
     is_active: true
   },
@@ -77,7 +77,7 @@ export const mockScooterModels: ScooterModel[] = [
     price_per_day: 350,
     price_per_week: null,
     price_per_month: null,
-    image_url: '', // TODO image
+    image_url: '/scooters/nmax.jpg',
     sort_order: 4,
     is_active: true
   },
@@ -94,7 +94,7 @@ export const mockScooterModels: ScooterModel[] = [
     price_per_day: 800,
     price_per_week: null,
     price_per_month: null,
-    image_url: '', // TODO image
+    image_url: '/scooters/adv350.jpg',
     sort_order: 5,
     is_active: true
   },
@@ -111,7 +111,7 @@ export const mockScooterModels: ScooterModel[] = [
     price_per_day: 700,
     price_per_week: null,
     price_per_month: null,
-    image_url: '', // TODO image
+    image_url: '/scooters/xmax.jpg',
     sort_order: 6,
     is_active: true
   },
@@ -128,7 +128,7 @@ export const mockScooterModels: ScooterModel[] = [
     price_per_day: 250,
     price_per_week: null,
     price_per_month: null,
-    image_url: '', // TODO image
+    image_url: '/scooters/pcx.jpg',
     sort_order: 7,
     is_active: true
   }
