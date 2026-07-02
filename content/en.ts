@@ -3,9 +3,9 @@ import type {SiteContent} from './types';
 /** EN content — LEXO (client #1) sample values. Editable without touching code. */
 export const en: SiteContent = {
   hero: {
-    title: 'Rent your scooter in Phuket, delivered to your door',
+    title: 'Rent your scooter in Phuket, made simple',
     subtitle:
-      'Recent, well-maintained scooters, delivered to your hotel, insurance included. Book in 2 minutes on WhatsApp.',
+      'Recent, well-maintained scooters, insurance included. Book in 2 minutes on WhatsApp.',
     ctaPrimary: 'Book my scooter',
     ctaSecondary: 'View models'
   },
@@ -24,11 +24,11 @@ export const en: SiteContent = {
       },
       {
         title: 'Send your request',
-        description: 'Fill in the form: dates, delivery location and contact details.'
+        description: 'Fill in the form: dates, model and contact details.'
       },
       {
         title: 'We finalise on WhatsApp',
-        description: 'We confirm availability and delivery right in the chat.'
+        description: 'We confirm availability and the final details right in the chat.'
       }
     ]
   },
@@ -37,8 +37,8 @@ export const en: SiteContent = {
     subtitle: 'One price, no surprises.',
     items: [
       {
-        title: 'Delivery & pickup',
-        description: 'To your hotel or the airport, anywhere on the island.'
+        title: 'Shop pickup',
+        description: 'Collect your ready-to-ride scooter at our Kathu shop.'
       },
       {
         title: 'Insurance included',
@@ -72,17 +72,23 @@ export const en: SiteContent = {
       }
     ]
   },
-  deliveryZones: {
-    title: 'Delivery zones',
-    subtitle: 'We deliver everywhere in Phuket.',
-    note: 'Other zones on request — message us on WhatsApp.',
-    zones: [
-      {name: 'Patong', price: 'Free'},
-      {name: 'Karon', price: '100 ฿'},
-      {name: 'Kata', price: '100 ฿'},
-      {name: 'Kamala', price: '150 ฿'},
-      {name: 'Phuket Town', price: '200 ฿'},
-      {name: 'Airport', price: '300 ฿'}
+  options: {
+    title: 'Options & accessories',
+    subtitle: 'Customise your scooter the way you like.',
+    note: 'Other accessories on request — message us on WhatsApp.',
+    items: [
+      {
+        name: 'Passenger backrest',
+        description: 'Extra comfort and support for your passenger.'
+      },
+      {
+        name: 'Akrapovic sport exhaust',
+        description: 'Sportier sound and looks on compatible models.'
+      },
+      {
+        name: 'Top-case',
+        description: 'Lockable storage for your belongings and a helmet.'
+      }
     ]
   },
   faq: {
@@ -97,17 +103,17 @@ export const en: SiteContent = {
       {
         question: 'How does the deposit work?',
         answer:
-          'The deposit is settled on delivery, in cash or via passport depending on the model. We explain everything on WhatsApp.'
+          'The deposit is settled when you pick up the scooter, in cash or via passport depending on the model. We explain everything on WhatsApp.'
       },
       {
         question: 'Can I pay online?',
         answer:
-          'No, there is no online payment. You send your request, we confirm, and payment is made on delivery.'
+          'No, there is no online payment. You send your request, we confirm, and payment is made when you pick up the scooter.'
       },
       {
-        question: 'Do you deliver to the airport?',
+        question: 'Can I add options (backrest, sport exhaust)?',
         answer:
-          'Yes, we deliver to Phuket airport as well as to your hotel anywhere on the island.'
+          'Yes, many of our scooters can be fitted with a backrest, an Akrapovic exhaust and other accessories. Just ask us on WhatsApp.'
       }
     ]
   },
@@ -119,7 +125,7 @@ export const en: SiteContent = {
   catalog: {
     title: 'Our scooter fleet',
     subtitle:
-      'Pick the model that fits your trip. Delivered to your hotel, insurance included.'
+      'Pick the model that fits your trip. Insurance included, add-on options available.'
   },
   reserve: {
     title: 'Book your scooter',

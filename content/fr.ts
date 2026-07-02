@@ -3,9 +3,9 @@ import type {SiteContent} from './types';
 /** Contenu FR — valeurs d'exemple LEXO (client #1). Éditable sans toucher au code. */
 export const fr: SiteContent = {
   hero: {
-    title: 'Louez votre scooter à Phuket, livré où vous êtes',
+    title: 'Louez votre scooter à Phuket en toute simplicité',
     subtitle:
-      'Scooters récents et entretenus, livraison à votre hôtel, assurance incluse. Réservez en 2 minutes sur WhatsApp.',
+      'Scooters récents et entretenus, assurance incluse. Réservez en 2 minutes sur WhatsApp.',
     ctaPrimary: 'Réserver mon scooter',
     ctaSecondary: 'Voir les modèles'
   },
@@ -26,12 +26,12 @@ export const fr: SiteContent = {
       {
         title: 'Envoyez votre demande',
         description:
-          'Remplissez le formulaire : dates, lieu de livraison et coordonnées.'
+          'Remplissez le formulaire : dates, modèle et coordonnées.'
       },
       {
         title: 'On finalise sur WhatsApp',
         description:
-          'On confirme la disponibilité et la livraison directement en message.'
+          'On confirme la disponibilité et les derniers détails directement en message.'
       }
     ]
   },
@@ -40,8 +40,8 @@ export const fr: SiteContent = {
     subtitle: 'Un seul tarif, aucune surprise.',
     items: [
       {
-        title: 'Livraison & récupération',
-        description: 'À votre hôtel ou à l’aéroport, sur toute l’île.'
+        title: 'Retrait au shop',
+        description: 'Récupérez votre scooter prêt à rouler à notre boutique de Kathu.'
       },
       {
         title: 'Assurance incluse',
@@ -75,17 +75,23 @@ export const fr: SiteContent = {
       }
     ]
   },
-  deliveryZones: {
-    title: 'Zones de livraison',
-    subtitle: 'On vous livre partout à Phuket.',
-    note: 'Autres zones sur demande — écrivez-nous sur WhatsApp.',
-    zones: [
-      {name: 'Patong', price: 'Gratuit'},
-      {name: 'Karon', price: '100 ฿'},
-      {name: 'Kata', price: '100 ฿'},
-      {name: 'Kamala', price: '150 ฿'},
-      {name: 'Phuket Town', price: '200 ฿'},
-      {name: 'Aéroport', price: '300 ฿'}
+  options: {
+    title: 'Options & accessoires',
+    subtitle: 'Personnalisez votre scooter selon vos envies.',
+    note: 'D’autres accessoires sur demande — écrivez-nous sur WhatsApp.',
+    items: [
+      {
+        name: 'Dosseret passager',
+        description: 'Plus de confort et de maintien pour votre passager.'
+      },
+      {
+        name: 'Échappement sport Akrapovic',
+        description: 'Sonorité et look sport sur les modèles compatibles.'
+      },
+      {
+        name: 'Top-case',
+        description: 'Rangement verrouillable pour vos affaires et un casque.'
+      }
     ]
   },
   faq: {
@@ -100,17 +106,17 @@ export const fr: SiteContent = {
       {
         question: 'Comment se passe la caution ?',
         answer:
-          'La caution se règle à la livraison, en espèces ou via le passeport selon le modèle. On vous explique tout sur WhatsApp.'
+          'La caution se règle à la remise du scooter, en espèces ou via le passeport selon le modèle. On vous explique tout sur WhatsApp.'
       },
       {
         question: 'Puis-je payer en ligne ?',
         answer:
-          'Non, il n’y a pas de paiement en ligne. Vous envoyez votre demande, on confirme, et le règlement se fait à la livraison.'
+          'Non, il n’y a pas de paiement en ligne. Vous envoyez votre demande, on confirme, et le règlement se fait à la remise du scooter.'
       },
       {
-        question: 'Livrez-vous à l’aéroport ?',
+        question: 'Puis-je ajouter des options (dosseret, échappement sport) ?',
         answer:
-          'Oui, nous livrons à l’aéroport de Phuket ainsi qu’à votre hôtel dans toute l’île.'
+          'Oui, plusieurs de nos scooters peuvent recevoir un dosseret, une ligne Akrapovic et d’autres accessoires. Demandez-nous sur WhatsApp.'
       }
     ]
   },
@@ -122,7 +128,7 @@ export const fr: SiteContent = {
   catalog: {
     title: 'Notre flotte de scooters',
     subtitle:
-      'Choisissez le modèle adapté à votre séjour. Livraison à votre hôtel, assurance incluse.'
+      'Choisissez le modèle adapté à votre séjour. Assurance incluse, options disponibles.'
   },
   reserve: {
     title: 'Réserver votre scooter',

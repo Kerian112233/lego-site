@@ -39,11 +39,7 @@ export default async function ReserverPage({
 
   return (
     <Section title={content.reserve.title} subtitle={content.reserve.subtitle}>
-      <BookingForm
-        models={models}
-        zones={content.deliveryZones.zones}
-        defaultModelId={model}
-      />
+      <BookingForm models={models} defaultModelId={model} />
     </Section>
   );
 }

@@ -17,8 +17,6 @@ type FormState = {
   model_id: string;
   start_date: string;
   end_date: string;
-  pickup_zone: string;
-  pickup_address: string;
   message: string;
 };
 
@@ -32,16 +30,17 @@ const controlClass =
 /**
  * Formulaire de demande de réservation (Phase 1, front-only).
  * Au submit → submitBookingRequest() construit le lien wa.me RÉEL et on redirige.
- * Aucune donnée n'est appelée en direct : modèles & zones arrivent en props
- * (dérivés du data layer / config par la page serveur).
+ * Aucune donnée n'est appelée en direct : les modèles arrivent en props
+ * (dérivés du data layer par la page serveur).
+ *
+ * LEXO ne fait PAS de livraison : pas de champ zone/adresse. Le contrat §5.2
+ * garde `pickup_zone`/`pickup_address` (autres clients) → envoyés vides ici.
  */
 export function BookingForm({
   models,
-  zones,
   defaultModelId
 }: {
   models: ScooterModel[];
-  zones: {name: string}[];
   defaultModelId?: string;
 }) {
   const t = useTranslations('form');
@@ -59,8 +58,6 @@ export function BookingForm({
         : '',
     start_date: '',
     end_date: '',
-    pickup_zone: '',
-    pickup_address: '',
     message: ''
   });
   const [errors, setErrors] = useState<Errors>({});
@@ -81,7 +78,6 @@ export function BookingForm({
     if (!values.full_name.trim()) e.full_name = required;
     if (!values.phone.trim()) e.phone = required;
     if (!values.model_id) e.model_id = required;
-    if (!values.pickup_zone) e.pickup_zone = required;
     if (!values.start_date) e.start_date = required;
     if (!values.end_date) e.end_date = required;
 
@@ -118,8 +114,8 @@ export function BookingForm({
       model_id: values.model_id,
       start_date: values.start_date,
       end_date: values.end_date,
-      pickup_zone: values.pickup_zone,
-      pickup_address: values.pickup_address.trim() || null,
+      pickup_zone: '', // LEXO : pas de livraison (contrat §5.2 conservé)
+      pickup_address: null,
       message: values.message.trim() || null,
       locale: locale === 'en' ? 'en' : 'fr',
       source: 'website'
@@ -135,10 +131,6 @@ export function BookingForm({
         payload.nationality ? `${t('nationality')} : ${payload.nationality}` : null,
         `${t('model')} : ${model?.name ?? ''}`,
         `${tw('datesLabel')} : ${values.start_date} → ${values.end_date}`,
-        `${t('pickupZone')} : ${values.pickup_zone}`,
-        payload.pickup_address
-          ? `${t('pickupAddress')} : ${payload.pickup_address}`
-          : null,
         `${t('phone')} : ${payload.phone}`,
         payload.email ? `${t('email')} : ${payload.email}` : null,
         payload.message ? `${t('message')} : ${payload.message}` : null,
@@ -184,25 +176,6 @@ export function BookingForm({
             {models.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.name}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field id="pickup_zone" label={t('pickupZone')} error={errors.pickup_zone} required>
-          <select
-            id="pickup_zone"
-            value={values.pickup_zone}
-            onChange={set('pickup_zone')}
-            aria-invalid={!!errors.pickup_zone}
-            className={controlClass}
-          >
-            <option value="" disabled>
-              {t('selectZone')}
-            </option>
-            {zones.map((z) => (
-              <option key={z.name} value={z.name}>
-                {z.name}
               </option>
             ))}
           </select>
@@ -258,17 +231,6 @@ export function BookingForm({
             id="nationality"
             value={values.nationality}
             onChange={set('nationality')}
-          />
-        </Field>
-
-        <Field
-          id="pickup_address"
-          label={`${t('pickupAddress')} (${t('optional')})`}
-        >
-          <Input
-            id="pickup_address"
-            value={values.pickup_address}
-            onChange={set('pickup_address')}
           />
         </Field>
 
