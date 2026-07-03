@@ -1,41 +1,22 @@
 'use client';
 
 import {useState} from 'react';
-import {useLocale, useTranslations} from 'next-intl';
-import {CalendarIcon} from 'lucide-react';
-import type {DateRange} from 'react-day-picker';
-import {enUS, fr} from 'react-day-picker/locale';
+import {useTranslations} from 'next-intl';
 import {useRouter} from '@/i18n/navigation';
 import {Button} from '@/components/ui/button';
-import {Calendar} from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@/components/ui/popover';
 import {cn} from '@/lib/utils';
 
-/** Date locale (YYYY-MM-DD) sans décalage de fuseau. */
-function toISO(d: Date): string {
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${d.getFullYear()}-${m}-${day}`;
-}
+const todayISO = () => new Date().toISOString().slice(0, 10);
 
-function parseISO(value?: string): Date | undefined {
-  if (!value) return undefined;
-  const [y, m, d] = value.split('-').map(Number);
-  if (!y || !m || !d) return undefined;
-  return new Date(y, m - 1, d);
-}
+const controlClass =
+  'h-11 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50';
 
 /**
- * Recherche par dates via calendrier de plage (arrivée → départ) →
- * redirige vers /scooters?start&end.
+ * Recherche par dates → redirige vers /scooters?start&end.
  *
- * Le calendrier reste OUVERT pendant la sélection (le client choisit/ajuste sa
- * période librement) ; c'est le bouton de validation, DANS le panneau, qui
- * applique — évite le double-clic d'un bouton externe (popover non-modal).
+ * Inputs `type="date"` NATIFS : sur mobile (iOS/Android) le sélecteur natif
+ * s'ouvre au touch de façon fiable, là où un calendrier JS custom échouait.
+ * Navigation via router.push (client-side, même origine) — pas de window.open.
  */
 export function DateSearch({
   defaultStart = '',
@@ -49,73 +30,52 @@ export function DateSearch({
   className?: string;
 }) {
   const t = useTranslations('search');
-  const locale = useLocale();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [range, setRange] = useState<DateRange | undefined>(() => {
-    const from = parseISO(defaultStart);
-    return from ? {from, to: parseISO(defaultEnd)} : undefined;
-  });
+  const [start, setStart] = useState(defaultStart);
+  const [end, setEnd] = useState(defaultEnd);
 
-  const fmt = (d: Date) =>
-    new Intl.DateTimeFormat(locale, {day: 'numeric', month: 'short'}).format(d);
-
-  const label = range?.from
-    ? range.to
-      ? `${fmt(range.from)} — ${fmt(range.to)}`
-      : fmt(range.from)
-    : t('datesPlaceholder');
-
-  function apply() {
-    if (!range?.from || !range?.to) return;
-    setOpen(false);
-    router.push({
-      pathname: '/scooters',
-      query: {start: toISO(range.from), end: toISO(range.to)}
-    });
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!start || !end) return;
+    router.push({pathname: '/scooters', query: {start, end}});
   }
 
   return (
-    <div className={className}>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger
-          render={
-            <Button
-              type="button"
-              variant="outline"
-              className="h-12 w-full justify-start gap-2 font-normal"
-            />
-          }
-        >
-          <CalendarIcon className="size-4 shrink-0 text-muted-foreground" />
-          <span className={cn(!range?.from && 'text-muted-foreground')}>
-            {label}
+    <form onSubmit={onSubmit} className={cn('flex flex-col gap-3', className)}>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <label className="flex-1">
+          <span className="mb-1 block text-xs font-medium text-muted-foreground">
+            {t('arrival')}
           </span>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="range"
-            selected={range}
-            onSelect={setRange}
-            numberOfMonths={2}
-            disabled={{before: new Date()}}
-            locale={locale === 'fr' ? fr : enUS}
-            className="[--cell-size:2.5rem] p-3"
-            autoFocus
+          <input
+            type="date"
+            min={todayISO()}
+            value={start}
+            onChange={(e) => setStart(e.target.value)}
+            className={controlClass}
           />
-          <div className="border-t border-border p-3">
-            <Button
-              type="button"
-              size="lg"
-              className="w-full"
-              disabled={!range?.from || !range?.to}
-              onClick={apply}
-            >
-              {submitLabel ?? t('submit')}
-            </Button>
-          </div>
-        </PopoverContent>
-      </Popover>
-    </div>
+        </label>
+        <label className="flex-1">
+          <span className="mb-1 block text-xs font-medium text-muted-foreground">
+            {t('departure')}
+          </span>
+          <input
+            type="date"
+            min={start || todayISO()}
+            value={end}
+            onChange={(e) => setEnd(e.target.value)}
+            className={controlClass}
+          />
+        </label>
+      </div>
+      <Button
+        type="submit"
+        size="lg"
+        disabled={!start || !end}
+        className="h-11 w-full"
+      >
+        {submitLabel ?? t('submit')}
+      </Button>
+    </form>
   );
 }

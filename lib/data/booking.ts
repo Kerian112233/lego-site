@@ -4,21 +4,23 @@ import type {BookingPayload, SubmitBookingResult} from './types';
 /**
  * SEUL point d'écriture d'une demande (CLAUDE.md règle 2). Client-side.
  *
- * Phase 1 : génère une référence mock locale et construit le lien WhatsApp
- *           (qui fonctionne POUR DE VRAI — aucun backend requis).
- * Phase 2 : ajouter en tête l'appel à la RPC `create_booking_request` (via une
- *           server action) pour obtenir la vraie référence, PUIS construire le
- *           même lien WhatsApp. Signature inchangée → zéro composant touché.
+ * ⚠️ SYNCHRONE À DESSEIN. Sur iOS Safari, naviguer vers wa.me APRÈS un `await`
+ * perd le "user gesture" du tap → Safari bloque l'ouverture. Le formulaire doit
+ * donc construire l'URL et naviguer dans le MÊME tap, sans rien awaiter avant.
+ *
+ * Phase 1 : génère une référence mock locale + construit le lien WhatsApp
+ *           (fonctionne pour de vrai, aucun backend).
+ * Phase 2 : l'enregistrement (RPC `create_booking_request`) se fait via une
+ *           server action, en fire-and-forget APRÈS la navigation, ou côté
+ *           serveur — sans réintroduire d'await avant la redirection.
  *
  * @param composeMessage reçoit la référence et renvoie le texte WhatsApp
- *   déjà localisé. Le template vit dans messages/*.json (structurel produit) et
- *   est composé par le formulaire ; on l'injecte ici pour que la construction
- *   du lien reste l'unique responsabilité du data layer.
+ *   déjà localisé (template dans messages/*.json), composé par le formulaire.
  */
-export async function submitBookingRequest(
+export function submitBookingRequest(
   payload: BookingPayload,
   composeMessage: (reference: string) => string
-): Promise<SubmitBookingResult> {
+): SubmitBookingResult {
   const reference = generateReference();
   const request_id = generateRequestId();
 

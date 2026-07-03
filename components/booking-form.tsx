@@ -102,13 +102,12 @@ export function BookingForm({
     return e;
   }
 
-  async function onSubmit(ev: React.FormEvent) {
+  function onSubmit(ev: React.FormEvent) {
     ev.preventDefault();
     const found = validate();
     setErrors(found);
     if (Object.keys(found).length > 0) return;
 
-    setSubmitting(true);
     const model = models.find((m) => m.id === values.model_id);
     const payload: BookingPayload = {
       full_name: values.full_name.trim(),
@@ -144,9 +143,11 @@ export function BookingForm({
       return lines.filter((line) => line !== null).join('\n');
     };
 
-    const result = await submitBookingRequest(payload, composeMessage);
-    // Redirection WhatsApp réelle (fonctionne sans backend).
-    window.location.href = result.whatsappUrl;
+    // iOS Safari : construire l'URL et naviguer dans le MÊME tap, sans await
+    // avant, sinon le "user gesture" est perdu et la nav est bloquée.
+    const {whatsappUrl} = submitBookingRequest(payload, composeMessage);
+    setSubmitting(true);
+    window.location.href = whatsappUrl;
   }
 
   return (

@@ -11,7 +11,8 @@ export const fr: SiteContent = {
   },
   modelsPreview: {
     title: 'Notre flotte',
-    subtitle: 'Trouvez le scooter parfait pour explorer Phuket à votre rythme.',
+    subtitle:
+      'Une flotte de plus de 150 scooters. Retrouvez le détail complet — couleurs et années — directement sur WhatsApp.',
     cta: 'Voir tous les scooters'
   },
   howItWorks: {

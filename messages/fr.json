@@ -10,7 +10,8 @@
     "viewScooters": "Voir les scooters",
     "contactWhatsApp": "Contacter sur WhatsApp",
     "backHome": "Retour à l’accueil",
-    "seeAll": "Tout voir"
+    "seeAll": "Tout voir",
+    "close": "Fermer"
   },
   "reviews": {
     "count": "{count} avis Google",
