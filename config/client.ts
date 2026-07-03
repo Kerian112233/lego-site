@@ -94,9 +94,9 @@ export const clientConfig: ClientConfig = {
     radius: '0.75rem'
   },
   contact: {
-    // Numéro WhatsApp international SANS "+". ⚠️ À confirmer (semble court pour un +33).
-    whatsappNumber: '3373954147',
-    phoneDisplay: '+33 73 95 41 47',
+    // Numéro WhatsApp international SANS "+".
+    whatsappNumber: '33673954147',
+    phoneDisplay: '+33 6 73 95 41 47',
     email: 'contact@lexo.example', // placeholder — à fournir par le client
     address: '201/6 Na Nai Road, Kathu, Phuket 83150',
     mapUrl: 'https://maps.google.com/?q=201/6+Na+Nai+Road+Kathu+Phuket+83150',
