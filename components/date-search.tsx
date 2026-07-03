@@ -99,9 +99,10 @@ export function DateSearch({
               setRange(next);
               if (next?.from && next?.to) setOpen(false);
             }}
-            numberOfMonths={1}
+            numberOfMonths={2}
             disabled={{before: new Date()}}
             locale={locale === 'fr' ? fr : enUS}
+            className="[--cell-size:2.5rem] p-3"
             autoFocus
           />
         </PopoverContent>
