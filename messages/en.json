@@ -14,7 +14,9 @@
   },
   "reviews": {
     "count": "{count} Google reviews",
-    "cta": "See all reviews on Google"
+    "cta": "See all reviews on Google",
+    "openPhoto": "View photo",
+    "close": "Close"
   },
   "catalog": {
     "perDay": "/ day",

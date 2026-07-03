@@ -3,6 +3,7 @@ import {Button} from '@/components/ui/button';
 import {Section} from '@/components/section';
 import {cn} from '@/lib/utils';
 import {clientConfig} from '@/config/client';
+import {ReviewPhoto} from '@/components/review-photo';
 import type {SiteContent} from '@/content/types';
 
 function Stars({filled = 5}: {filled?: number}) {
@@ -54,23 +55,7 @@ export function Reviews({content}: {content: SiteContent['reviews']}) {
             <blockquote className="mt-3 flex-1 text-sm">
               “{review.text}”
             </blockquote>
-            {review.photo && (
-              // Cliquable (ouvre la photo) sur mobile uniquement — désactivé ≥ md.
-              <a
-                href={review.photo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 block overflow-hidden rounded-lg bg-muted pointer-events-auto md:pointer-events-none"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={review.photo}
-                  alt=""
-                  loading="lazy"
-                  className="h-40 w-full object-cover"
-                />
-              </a>
-            )}
+            {review.photo && <ReviewPhoto src={review.photo} />}
             <figcaption className="mt-4 flex items-center gap-3">
               <ReviewAvatar author={review.author} />
               <div className="text-sm leading-tight">

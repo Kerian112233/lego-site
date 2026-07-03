@@ -14,7 +14,9 @@
   },
   "reviews": {
     "count": "{count} avis Google",
-    "cta": "Voir tous les avis sur Google"
+    "cta": "Voir tous les avis sur Google",
+    "openPhoto": "Voir la photo",
+    "close": "Fermer"
   },
   "catalog": {
     "perDay": "/ jour",

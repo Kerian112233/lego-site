@@ -85,7 +85,7 @@ export const en: SiteContent = {
       {
         question: 'How does the deposit work?',
         answer:
-          'The deposit is settled when you pick up the scooter, in cash or via passport depending on the model. We explain everything on WhatsApp.'
+          'The deposit is your passport only, handed over when you collect the scooter and returned when you bring it back. No cash deposit. We explain everything on WhatsApp.'
       },
       {
         question: 'Can I pay online?',

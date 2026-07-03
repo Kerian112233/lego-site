@@ -88,7 +88,7 @@ export const fr: SiteContent = {
       {
         question: 'Comment se passe la caution ?',
         answer:
-          'La caution se règle à la remise du scooter, en espèces ou via le passeport selon le modèle. On vous explique tout sur WhatsApp.'
+          'La caution se fait uniquement par dépôt du passeport, remis à la prise du scooter et rendu au retour. Pas de caution en espèces. On vous explique tout sur WhatsApp.'
       },
       {
         question: 'Puis-je payer en ligne ?',
