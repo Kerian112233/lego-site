@@ -12,6 +12,10 @@
     "backHome": "Retour à l’accueil",
     "seeAll": "Tout voir"
   },
+  "reviews": {
+    "count": "{count} avis Google",
+    "cta": "Voir tous les avis sur Google"
+  },
   "catalog": {
     "perDay": "/ jour",
     "perWeek": "/ semaine",

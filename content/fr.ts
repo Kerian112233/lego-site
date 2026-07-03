@@ -11,7 +11,7 @@ export const fr: SiteContent = {
   },
   modelsPreview: {
     title: 'Notre flotte',
-    subtitle: 'Du 110cc urbain au maxi-scooter, un modèle pour chaque trajet.',
+    subtitle: 'Trouvez le scooter parfait pour explorer Phuket à votre rythme.',
     cta: 'Voir tous les scooters'
   },
   howItWorks: {
@@ -57,24 +57,6 @@ export const fr: SiteContent = {
       }
     ]
   },
-  whyUs: {
-    title: 'Pourquoi nous choisir',
-    subtitle: 'Des centaines de voyageurs nous font confiance chaque saison.',
-    items: [
-      {
-        title: 'Scooters récents',
-        description: 'Flotte renouvelée et révisée après chaque location.'
-      },
-      {
-        title: 'Prix transparents',
-        description: 'Tarifs dégressifs à la semaine et au mois, sans frais cachés.'
-      },
-      {
-        title: 'Réservation sans stress',
-        description: 'Pas de paiement en ligne : tout se règle de vive voix.'
-      }
-    ]
-  },
   options: {
     title: 'Options & accessoires',
     subtitle: 'Personnalisez votre scooter selon vos envies.',
@@ -117,6 +99,30 @@ export const fr: SiteContent = {
         question: 'Puis-je ajouter des options (dosseret, échappement sport) ?',
         answer:
           'Oui, plusieurs de nos scooters peuvent recevoir un dosseret, une ligne Akrapovic et d’autres accessoires. Demandez-nous sur WhatsApp.'
+      }
+    ]
+  },
+  reviews: {
+    title: 'Ils nous ont fait confiance',
+    subtitle: 'La satisfaction de nos clients, avis après avis.',
+    rating: 4.9,
+    count: 244,
+    // Vrais avis Google (avatars : /reviews/*.jpg à déposer par le client).
+    items: [
+      {
+        author: 'Mehdi',
+        location: 'Local Guide',
+        photo: '/reviews/mehdi.jpg',
+        text: 'Service au top ! Scooter en parfait état, très propre et fiable. La personne a été super arrangeante, disponible et professionnelle du début à la fin. Je recommande à 100 %, vous pouvez y aller les yeux fermés !'
+      },
+      {
+        author: 'Selin Urgan',
+        text: 'Superbe personne, location de scooter comme excursions, rien à dire, une superbe agence ! Le personnel est toujours disponible sur WhatsApp. Le luxe de Phuket, je recommande à 100 % 👌'
+      },
+      {
+        author: 'Hedi Oua',
+        photo: '/reviews/hedi.jpg',
+        text: 'À chaque séjour à Phuket, lorsque je loue un scooter, je fais appel à Lexo : un service fiable, sympathique et toujours ponctuel.'
       }
     ]
   },

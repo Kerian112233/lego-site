@@ -55,6 +55,8 @@ export interface ClientConfig {
     mapUrl: string;
     /** URL d'embed iframe Google Maps. */
     mapEmbedUrl: string;
+    /** Lien vers la fiche Google (bouton "voir tous les avis"). */
+    googleReviewsUrl: string;
   };
   booking: {
     /** Préfixe des références lisibles, ex: "LEXO" → LEXO-2026-0042. */
@@ -99,7 +101,8 @@ export const clientConfig: ClientConfig = {
     address: '201/6 Na Nai Road, Kathu, Phuket 83150',
     mapUrl: 'https://maps.google.com/?q=201/6+Na+Nai+Road+Kathu+Phuket+83150',
     mapEmbedUrl:
-      'https://www.google.com/maps?q=201/6+Na+Nai+Road+Kathu+Phuket+83150&output=embed'
+      'https://www.google.com/maps?q=201/6+Na+Nai+Road+Kathu+Phuket+83150&output=embed',
+    googleReviewsUrl: 'https://share.google/qf2A0PPv8qgOvNIeo'
   },
   booking: {
     referencePrefix: 'LEXO'

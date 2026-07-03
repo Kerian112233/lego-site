@@ -12,6 +12,10 @@
     "backHome": "Back to home",
     "seeAll": "See all"
   },
+  "reviews": {
+    "count": "{count} Google reviews",
+    "cta": "See all reviews on Google"
+  },
   "catalog": {
     "perDay": "/ day",
     "perWeek": "/ week",

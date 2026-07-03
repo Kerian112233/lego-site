@@ -6,8 +6,8 @@ import {Hero} from '@/components/sections/hero';
 import {ModelsPreview} from '@/components/sections/models-preview';
 import {HowItWorks} from '@/components/sections/how-it-works';
 import {AllInclusive} from '@/components/sections/all-inclusive';
-import {WhyUs} from '@/components/sections/why-us';
 import {Options} from '@/components/sections/options';
+import {Reviews} from '@/components/sections/reviews';
 import {Faq} from '@/components/sections/faq';
 import {HoursMap} from '@/components/sections/hours-map';
 
@@ -32,8 +32,8 @@ export default async function HomePage({
       />
       <HowItWorks content={content.howItWorks} />
       <AllInclusive content={content.allInclusive} />
-      <WhyUs content={content.whyUs} />
       <Options content={content.options} />
+      <Reviews content={content.reviews} />
       <Faq content={content.faq} />
       <HoursMap content={content.hoursMap} hours={content.openingHours} />
     </>
