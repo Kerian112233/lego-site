@@ -1,19 +1,37 @@
 'use client';
 
 import {useState} from 'react';
-import {useTranslations} from 'next-intl';
+import {useLocale, useTranslations} from 'next-intl';
+import {CalendarIcon} from 'lucide-react';
+import type {DateRange} from 'react-day-picker';
+import {enUS, fr} from 'react-day-picker/locale';
 import {useRouter} from '@/i18n/navigation';
 import {Button} from '@/components/ui/button';
+import {Calendar} from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover';
 import {cn} from '@/lib/utils';
 
-const todayISO = () => new Date().toISOString().slice(0, 10);
+/** Date locale (YYYY-MM-DD) sans décalage de fuseau. */
+function toISO(d: Date): string {
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${d.getFullYear()}-${m}-${day}`;
+}
 
-const controlClass =
-  'h-10 w-full rounded-lg border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50';
+function parseISO(value?: string): Date | undefined {
+  if (!value) return undefined;
+  const [y, m, d] = value.split('-').map(Number);
+  if (!y || !m || !d) return undefined;
+  return new Date(y, m - 1, d);
+}
 
 /**
- * Recherche par dates → redirige vers /scooters?start&end.
- * Utilisé dans le hero (recherche) et en haut du catalogue (mise à jour).
+ * Recherche par dates via calendrier de plage (arrivée → départ) →
+ * redirige vers /scooters?start&end. Utilisé dans le hero et le catalogue.
  */
 export function DateSearch({
   defaultStart = '',
@@ -27,56 +45,72 @@ export function DateSearch({
   className?: string;
 }) {
   const t = useTranslations('search');
+  const locale = useLocale();
   const router = useRouter();
-  const [start, setStart] = useState(defaultStart);
-  const [end, setEnd] = useState(defaultEnd);
+  const [open, setOpen] = useState(false);
+  const [range, setRange] = useState<DateRange | undefined>(() => {
+    const from = parseISO(defaultStart);
+    return from ? {from, to: parseISO(defaultEnd)} : undefined;
+  });
+
+  const fmt = (d: Date) =>
+    new Intl.DateTimeFormat(locale, {day: 'numeric', month: 'short'}).format(d);
+
+  const label = range?.from
+    ? range.to
+      ? `${fmt(range.from)} — ${fmt(range.to)}`
+      : fmt(range.from)
+    : t('datesPlaceholder');
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    router.push({pathname: '/scooters', query: {start, end}});
+    if (!range?.from || !range?.to) return;
+    router.push({
+      pathname: '/scooters',
+      query: {start: toISO(range.from), end: toISO(range.to)}
+    });
   }
 
   return (
     <form
       onSubmit={onSubmit}
-      className={cn('flex flex-col gap-3 sm:flex-row sm:items-end', className)}
+      className={cn('flex flex-col gap-3 sm:flex-row sm:items-center', className)}
     >
-      <div className="flex-1">
-        <label
-          htmlFor="search-start"
-          className="mb-1 block text-xs font-medium text-muted-foreground"
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger
+          render={
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 w-full justify-start gap-2 font-normal sm:flex-1"
+            />
+          }
         >
-          {t('arrival')}
-        </label>
-        <input
-          id="search-start"
-          type="date"
-          min={todayISO()}
-          value={start}
-          onChange={(e) => setStart(e.target.value)}
-          className={controlClass}
-        />
-      </div>
-      <div className="flex-1">
-        <label
-          htmlFor="search-end"
-          className="mb-1 block text-xs font-medium text-muted-foreground"
-        >
-          {t('departure')}
-        </label>
-        <input
-          id="search-end"
-          type="date"
-          min={start || todayISO()}
-          value={end}
-          onChange={(e) => setEnd(e.target.value)}
-          className={controlClass}
-        />
-      </div>
+          <CalendarIcon className="size-4 shrink-0 text-muted-foreground" />
+          <span className={cn(!range?.from && 'text-muted-foreground')}>
+            {label}
+          </span>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="range"
+            selected={range}
+            onSelect={(next) => {
+              setRange(next);
+              if (next?.from && next?.to) setOpen(false);
+            }}
+            numberOfMonths={1}
+            disabled={{before: new Date()}}
+            locale={locale === 'fr' ? fr : enUS}
+            autoFocus
+          />
+        </PopoverContent>
+      </Popover>
+
       <Button
         type="submit"
-        disabled={!start || !end}
-        className="h-10 w-full sm:w-auto"
+        disabled={!range?.from || !range?.to}
+        className="h-11 w-full sm:w-auto"
       >
         {submitLabel ?? t('submit')}
       </Button>

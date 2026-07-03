@@ -23,6 +23,7 @@
     "departure": "Départ",
     "submit": "Voir les scooters disponibles",
     "update": "Mettre à jour",
+    "datesPlaceholder": "Sélectionnez vos dates",
     "allScooters": "Voir tous les scooters",
     "available": "{count, plural, =0 {Aucun scooter disponible} one {# scooter disponible} other {# scooters disponibles}}",
     "unavailable": "Indisponible pour ces dates",
