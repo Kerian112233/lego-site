@@ -18,6 +18,16 @@
     "openPhoto": "Voir la photo",
     "close": "Fermer"
   },
+  "search": {
+    "arrival": "Arrivée",
+    "departure": "Départ",
+    "submit": "Voir les scooters disponibles",
+    "update": "Mettre à jour",
+    "allScooters": "Voir tous les scooters",
+    "available": "{count, plural, =0 {Aucun scooter disponible} one {# scooter disponible} other {# scooters disponibles}}",
+    "unavailable": "Indisponible pour ces dates",
+    "pickDates": "Choisissez vos dates pour voir les scooters disponibles."
+  },
   "catalog": {
     "perDay": "/ jour",
     "perWeek": "/ semaine",

@@ -2,25 +2,45 @@ import {useTranslations} from 'next-intl';
 import {Link} from '@/i18n/navigation';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardFooter} from '@/components/ui/card';
+import {cn} from '@/lib/utils';
 import type {ScooterModel} from '@/lib/data/types';
 import type {Locale} from '@/i18n/routing';
 
 /** Carte modèle, alimentée par le contrat ScooterModel (§5.1). */
 export function ScooterCard({
   model,
-  locale
+  locale,
+  available = true,
+  range
 }: {
   model: ScooterModel;
   locale: Locale;
+  /** Disponible pour les dates sélectionnées (défaut true = pas de recherche par dates). */
+  available?: boolean;
+  /** Dates sélectionnées, reportées dans le lien de réservation. */
+  range?: {start: string; end: string};
 }) {
   const t = useTranslations('catalog');
+  const ts = useTranslations('search');
   const nf = new Intl.NumberFormat(locale);
   const price = (value: number) => `${nf.format(value)} ฿`;
   const description =
     locale === 'fr' ? model.description_fr : model.description_en;
 
+  const reserveHref = range
+    ? {
+        pathname: '/reserver' as const,
+        query: {model: model.id, start: range.start, end: range.end}
+      }
+    : {pathname: '/reserver' as const, query: {model: model.id}};
+
   return (
-    <Card className="flex h-full flex-col overflow-hidden pt-0">
+    <Card
+      className={cn(
+        'flex h-full flex-col overflow-hidden pt-0',
+        !available && 'opacity-60'
+      )}
+    >
       <div className="relative aspect-[4/3] bg-muted">
         {/* image_url peut être vide (photo pas encore fournie) → placeholder neutre. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -28,7 +48,7 @@ export function ScooterCard({
           src={model.image_url || '/scooters/placeholder.svg'}
           alt={model.name}
           loading="lazy"
-          className="size-full object-cover"
+          className={cn('size-full object-cover', !available && 'grayscale')}
         />
         <span className="absolute left-3 top-3 rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium shadow-sm">
           {model.category}
@@ -76,15 +96,19 @@ export function ScooterCard({
       </CardContent>
 
       <CardFooter>
-        <Button
-          className="w-full"
-          nativeButton={false}
-          render={
-            <Link href={{pathname: '/reserver', query: {model: model.id}}} />
-          }
-        >
-          {t('bookThisModel')}
-        </Button>
+        {available ? (
+          <Button
+            className="w-full"
+            nativeButton={false}
+            render={<Link href={reserveHref} />}
+          >
+            {t('bookThisModel')}
+          </Button>
+        ) : (
+          <Button className="w-full" variant="secondary" disabled>
+            {ts('unavailable')}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

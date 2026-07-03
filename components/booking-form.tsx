@@ -38,10 +38,14 @@ const controlClass =
  */
 export function BookingForm({
   models,
-  defaultModelId
+  defaultModelId,
+  defaultStart,
+  defaultEnd
 }: {
   models: ScooterModel[];
   defaultModelId?: string;
+  defaultStart?: string;
+  defaultEnd?: string;
 }) {
   const t = useTranslations('form');
   const tw = useTranslations('whatsapp');
@@ -56,8 +60,8 @@ export function BookingForm({
       defaultModelId && models.some((m) => m.id === defaultModelId)
         ? defaultModelId
         : '',
-    start_date: '',
-    end_date: '',
+    start_date: defaultStart ?? '',
+    end_date: defaultEnd ?? '',
     message: ''
   });
   const [errors, setErrors] = useState<Errors>({});

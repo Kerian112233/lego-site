@@ -4,26 +4,32 @@ import {useMemo, useState} from 'react';
 import {useTranslations} from 'next-intl';
 import {Button} from '@/components/ui/button';
 import {ScooterCard} from '@/components/scooter-card';
+import {DateSearch} from '@/components/date-search';
 import type {ScooterModel} from '@/lib/data/types';
 import type {Locale} from '@/i18n/routing';
 
 const ALL = '__all__';
 
 /**
- * Catalogue : filtre par catégorie + grille responsive.
- * Ne suppose RIEN sur le nombre de modèles (grille qui scale, catégories
- * dérivées de la donnée, état vide géré). Les modèles arrivent déjà triés par
- * sort_order depuis getScooterModels().
+ * Catalogue : recherche par dates + filtre catégorie + grille responsive.
+ * Ne suppose RIEN sur le nombre de modèles. Dispo par dates simulée côté serveur
+ * (getUnavailableModelIds) : les indispos sont grisés, pas masqués.
  */
 export function ScooterCatalog({
   models,
-  locale
+  locale,
+  unavailableIds,
+  range
 }: {
   models: ScooterModel[];
   locale: Locale;
+  unavailableIds: string[];
+  range?: {start: string; end: string};
 }) {
   const t = useTranslations('catalog');
+  const ts = useTranslations('search');
   const [category, setCategory] = useState<string>(ALL);
+  const unavailable = useMemo(() => new Set(unavailableIds), [unavailableIds]);
 
   // Catégories uniques dans l'ordre d'apparition (donc trié par sort_order).
   const categories = useMemo(() => {
@@ -38,26 +44,37 @@ export function ScooterCatalog({
     return list;
   }, [models]);
 
-  const filtered = useMemo(
-    () =>
+  const filtered = useMemo(() => {
+    const list =
       category === ALL
         ? models
-        : models.filter((m) => m.category === category),
-    [models, category]
-  );
+        : models.filter((m) => m.category === category);
+    if (!range) return list;
+    // Dates sélectionnées : on montre tout mais on remonte les disponibles.
+    return [...list].sort(
+      (a, b) =>
+        (unavailable.has(a.id) ? 1 : 0) - (unavailable.has(b.id) ? 1 : 0)
+    );
+  }, [models, category, range, unavailable]);
+
+  const availableCount = filtered.filter((m) => !unavailable.has(m.id)).length;
 
   return (
-    <div className="mt-10">
+    <div className="mt-8">
+      <DateSearch
+        defaultStart={range?.start ?? ''}
+        defaultEnd={range?.end ?? ''}
+        submitLabel={ts('update')}
+        className="mx-auto max-w-2xl rounded-xl border border-border bg-muted/30 p-4"
+      />
+
       {categories.length > 1 && (
         <div
-          className="mb-8 flex flex-wrap items-center justify-center gap-2"
+          className="mt-8 flex flex-wrap items-center justify-center gap-2"
           role="group"
           aria-label={t('filterLabel')}
         >
-          <FilterPill
-            active={category === ALL}
-            onClick={() => setCategory(ALL)}
-          >
+          <FilterPill active={category === ALL} onClick={() => setCategory(ALL)}>
             {t('allCategories')}
           </FilterPill>
           {categories.map((cat) => (
@@ -72,8 +89,10 @@ export function ScooterCatalog({
         </div>
       )}
 
-      <p className="mb-6 text-center text-sm text-muted-foreground">
-        {t('results', {count: filtered.length})}
+      <p className="mb-6 mt-6 text-center text-sm text-muted-foreground">
+        {range
+          ? ts('available', {count: availableCount})
+          : t('results', {count: filtered.length})}
       </p>
 
       {filtered.length === 0 ? (
@@ -83,7 +102,13 @@ export function ScooterCatalog({
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((model) => (
-            <ScooterCard key={model.id} model={model} locale={locale} />
+            <ScooterCard
+              key={model.id}
+              model={model}
+              locale={locale}
+              available={!unavailable.has(model.id)}
+              range={range}
+            />
           ))}
         </div>
       )}

@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import {setRequestLocale} from 'next-intl/server';
 import {resolveLocale} from '@/i18n/routing';
 import {clientConfig} from '@/config/client';
-import {getScooterModels} from '@/lib/data/models';
+import {getScooterModels, getUnavailableModelIds} from '@/lib/data/models';
 import {buildPageMetadata} from '@/lib/seo';
 import {Section} from '@/components/section';
 import {ScooterCatalog} from '@/components/scooter-catalog';
@@ -23,9 +23,11 @@ export async function generateMetadata({
 }
 
 export default async function ScootersPage({
-  params
+  params,
+  searchParams
 }: {
   params: Promise<{locale: string}>;
+  searchParams: Promise<{start?: string; end?: string}>;
 }) {
   const {locale} = await params;
   setRequestLocale(locale);
@@ -34,9 +36,20 @@ export default async function ScootersPage({
   const content = clientConfig.content[activeLocale];
   const models = await getScooterModels();
 
+  const {start, end} = await searchParams;
+  const range = start && end ? {start, end} : undefined;
+  const unavailableIds = range
+    ? await getUnavailableModelIds(models, range.start, range.end)
+    : [];
+
   return (
     <Section title={content.catalog.title} subtitle={content.catalog.subtitle}>
-      <ScooterCatalog models={models} locale={activeLocale} />
+      <ScooterCatalog
+        models={models}
+        locale={activeLocale}
+        unavailableIds={unavailableIds}
+        range={range}
+      />
     </Section>
   );
 }

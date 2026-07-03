@@ -27,7 +27,7 @@ export default async function ReserverPage({
   searchParams
 }: {
   params: Promise<{locale: string}>;
-  searchParams: Promise<{model?: string}>;
+  searchParams: Promise<{model?: string; start?: string; end?: string}>;
 }) {
   const {locale} = await params;
   setRequestLocale(locale);
@@ -35,11 +35,16 @@ export default async function ReserverPage({
   const activeLocale = resolveLocale(locale);
   const content = clientConfig.content[activeLocale];
   const models = await getScooterModels();
-  const {model} = await searchParams;
+  const {model, start, end} = await searchParams;
 
   return (
     <Section title={content.reserve.title} subtitle={content.reserve.subtitle}>
-      <BookingForm models={models} defaultModelId={model} />
+      <BookingForm
+        models={models}
+        defaultModelId={model}
+        defaultStart={start}
+        defaultEnd={end}
+      />
     </Section>
   );
 }
