@@ -55,15 +55,21 @@ export function Reviews({content}: {content: SiteContent['reviews']}) {
               “{review.text}”
             </blockquote>
             {review.photo && (
-              <div className="mt-4 aspect-[4/3] w-full overflow-hidden rounded-lg bg-muted">
+              // Cliquable (ouvre la photo) sur mobile uniquement — désactivé ≥ md.
+              <a
+                href={review.photo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 block overflow-hidden rounded-lg bg-muted pointer-events-auto md:pointer-events-none"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={review.photo}
                   alt=""
                   loading="lazy"
-                  className="size-full object-cover"
+                  className="h-40 w-full object-cover"
                 />
-              </div>
+              </a>
             )}
             <figcaption className="mt-4 flex items-center gap-3">
               <ReviewAvatar author={review.author} />

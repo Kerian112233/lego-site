@@ -108,7 +108,6 @@ export const en: SiteContent = {
     items: [
       {
         author: 'Mehdi',
-        location: 'Local Guide',
         photo: '/reviews/mehdi.jpg',
         text: 'Service au top ! Scooter en parfait état, très propre et fiable. La personne a été super arrangeante, disponible et professionnelle du début à la fin. Je recommande à 100 %, vous pouvez y aller les yeux fermés !'
       },
