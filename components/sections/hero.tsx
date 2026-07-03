@@ -15,7 +15,7 @@ export function Hero({content}: {content: SiteContent['hero']}) {
             {content.subtitle}
           </p>
 
-          <div className="mt-8 rounded-2xl border border-border bg-background/70 p-4 text-left shadow-sm backdrop-blur">
+          <div className="mx-auto mt-8 max-w-sm md:mx-0">
             <DateSearch />
           </div>
 

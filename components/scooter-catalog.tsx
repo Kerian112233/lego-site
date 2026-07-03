@@ -65,7 +65,7 @@ export function ScooterCatalog({
         defaultStart={range?.start ?? ''}
         defaultEnd={range?.end ?? ''}
         submitLabel={ts('update')}
-        className="mx-auto max-w-2xl rounded-xl border border-border bg-muted/30 p-4"
+        className="mx-auto max-w-sm"
       />
 
       {categories.length > 1 && (

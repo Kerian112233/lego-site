@@ -31,7 +31,11 @@ function parseISO(value?: string): Date | undefined {
 
 /**
  * Recherche par dates via calendrier de plage (arrivée → départ) →
- * redirige vers /scooters?start&end. Utilisé dans le hero et le catalogue.
+ * redirige vers /scooters?start&end.
+ *
+ * Le calendrier reste OUVERT pendant la sélection (le client choisit/ajuste sa
+ * période librement) ; c'est le bouton de validation, DANS le panneau, qui
+ * applique — évite le double-clic d'un bouton externe (popover non-modal).
  */
 export function DateSearch({
   defaultStart = '',
@@ -62,9 +66,9 @@ export function DateSearch({
       : fmt(range.from)
     : t('datesPlaceholder');
 
-  function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  function apply() {
     if (!range?.from || !range?.to) return;
+    setOpen(false);
     router.push({
       pathname: '/scooters',
       query: {start: toISO(range.from), end: toISO(range.to)}
@@ -72,17 +76,14 @@ export function DateSearch({
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className={cn('flex flex-col gap-3 sm:flex-row sm:items-center', className)}
-    >
+    <div className={className}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger
           render={
             <Button
               type="button"
               variant="outline"
-              className="h-11 w-full justify-start gap-2 font-normal sm:flex-1"
+              className="h-12 w-full justify-start gap-2 font-normal"
             />
           }
         >
@@ -95,26 +96,26 @@ export function DateSearch({
           <Calendar
             mode="range"
             selected={range}
-            onSelect={(next) => {
-              setRange(next);
-              if (next?.from && next?.to) setOpen(false);
-            }}
+            onSelect={setRange}
             numberOfMonths={2}
             disabled={{before: new Date()}}
             locale={locale === 'fr' ? fr : enUS}
             className="[--cell-size:2.5rem] p-3"
             autoFocus
           />
+          <div className="border-t border-border p-3">
+            <Button
+              type="button"
+              size="lg"
+              className="w-full"
+              disabled={!range?.from || !range?.to}
+              onClick={apply}
+            >
+              {submitLabel ?? t('submit')}
+            </Button>
+          </div>
         </PopoverContent>
       </Popover>
-
-      <Button
-        type="submit"
-        disabled={!range?.from || !range?.to}
-        className="h-11 w-full sm:w-auto"
-      >
-        {submitLabel ?? t('submit')}
-      </Button>
-    </form>
+    </div>
   );
 }
