@@ -69,7 +69,8 @@
     "bookingIntro": "New booking request",
     "datesLabel": "Dates",
     "referenceLabel": "Ref",
-    "contactMessage": "Hello, I have a few questions about renting a scooter."
+    "contactMessage": "Hello, I have a few questions about renting a scooter.",
+    "otherQuestion": "Another question? Message us directly on WhatsApp:"
   },
   "footer": {
     "rights": "All rights reserved.",

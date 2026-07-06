@@ -138,8 +138,8 @@ export const fr: SiteContent = {
   },
   seasons: {
     low: {name: 'Basse saison', period: 'du 01/05 au 30/11'},
-    high: {name: 'Haute saison', period: 'du 01/12 au 14/12 et du 16/02 au 30/04'},
-    peak: {name: 'Peak saison', period: 'du 15/12 au 15/02'}
+    high: {name: 'Moyenne saison', period: 'du 01/12 au 14/12 et du 16/02 au 30/04'},
+    peak: {name: 'Haute saison', period: 'du 15/12 au 15/02'}
   },
   reserve: {
     title: 'Réserver votre scooter',
