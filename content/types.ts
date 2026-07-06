@@ -89,6 +89,12 @@ export interface SiteContent {
     title: string;
     subtitle: string;
   };
+  /** Saisons tarifaires : nom + période affichée (aligné sur ScooterModel.prices). */
+  seasons: {
+    low: {name: string; period: string};
+    high: {name: string; period: string};
+    peak: {name: string; period: string};
+  };
   /** En-tête de la page /reserver. */
   reserve: {
     title: string;

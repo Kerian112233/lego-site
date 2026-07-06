@@ -133,6 +133,11 @@ export const en: SiteContent = {
     subtitle:
       'Pick the model that fits your trip. Insurance included, add-on options available.'
   },
+  seasons: {
+    low: {name: 'Low season', period: '01/05 – 30/11'},
+    high: {name: 'High season', period: '01/12 – 14/12 and 16/02 – 30/04'},
+    peak: {name: 'Peak season', period: '15/12 – 15/02'}
+  },
   reserve: {
     title: 'Book your scooter',
     subtitle:

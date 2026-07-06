@@ -1,16 +1,16 @@
 import type {ScooterModel} from '../types';
 
 /**
- * Flotte LEXO réelle — dérivée de docs/… (CSV fourni par le client).
- * Le site est un catalogue par MODÈLE : les 105 unités du CSV sont regroupées
- * en 7 modèles (code/plaque/couleur/options/statut ignorés).
+ * Flotte LEXO réelle — dérivée du CSV client, regroupée en 7 modèles.
  *
  * Type STRICT = ScooterModel (§5.1), aucun champ en plus → swap Supabase trivial.
  *
  * TODO client :
- *  - prix : price_per_day = tarifs provisoires fournis ; week/month à définir.
+ *  - prix : `prices` (basse/haute/peak, ฿/jour) = PLACEHOLDERS inventés, à
+ *    remplacer par les vrais tarifs. Le calendrier des saisons vit dans
+ *    content.seasons.
  *  - description_fr/en : brouillons à relire (// TODO desc).
- *  - image_url : photos client dans /public/scooters/ (à remplacer si meilleures dispos).
+ *  - image_url : photos client dans /public/scooters/.
  */
 export const mockScooterModels: ScooterModel[] = [
   {
@@ -23,9 +23,7 @@ export const mockScooterModels: ScooterModel[] = [
       'Le SUV des scooters : look aventure, position haute et agilité en ville comme sur les routes de l’île.', // TODO desc
     description_en:
       'The SUV of scooters: adventure looks, an upright ride and agility both in town and on the island’s roads.', // TODO desc
-    price_per_day: 400,
-    price_per_week: null,
-    price_per_month: null,
+    prices: {low: 400, high: 500, peak: 700}, // TODO prix réels
     image_url: '/scooters/adv160.jpg',
     sort_order: 1,
     is_active: true
@@ -40,9 +38,7 @@ export const mockScooterModels: ScooterModel[] = [
       'Maxi-trail bicylindre à boîte automatique DCT, pour avaler les distances avec caractère.', // TODO desc
     description_en:
       'Twin-cylinder maxi-trail with automatic DCT gearbox, built to cover distance with character.', // TODO desc
-    price_per_day: 1200,
-    price_per_week: null,
-    price_per_month: null,
+    prices: {low: 1300, high: 1500, peak: 2500}, // TODO prix réels
     image_url: '/scooters/xadv.jpg',
     sort_order: 2,
     is_active: true
@@ -57,9 +53,7 @@ export const mockScooterModels: ScooterModel[] = [
       'L’icône des maxi-scooters sportifs : puissance, tenue de route et confort sur les longs trajets.', // TODO desc
     description_en:
       'The iconic sport maxi-scooter: power, handling and comfort on longer rides.', // TODO desc
-    price_per_day: 1200,
-    price_per_week: null,
-    price_per_month: null,
+    prices: {low: 1200, high: 1400, peak: 2300}, // TODO prix réels
     image_url: '/scooters/tmax.jpg',
     sort_order: 3,
     is_active: true
@@ -74,9 +68,7 @@ export const mockScooterModels: ScooterModel[] = [
       'Compact et économique, parfait pour se faufiler et explorer Phuket au quotidien.', // TODO desc
     description_en:
       'Compact and economical, perfect for weaving through traffic and exploring Phuket day to day.', // TODO desc
-    price_per_day: 350,
-    price_per_week: null,
-    price_per_month: null,
+    prices: {low: 350, high: 450, peak: 650}, // TODO prix réels
     image_url: '/scooters/nmax.jpg',
     sort_order: 4,
     is_active: true
@@ -91,9 +83,7 @@ export const mockScooterModels: ScooterModel[] = [
       'L’équilibre idéal entre agilité urbaine et aisance sur route, avec un vrai look aventure.', // TODO desc
     description_en:
       'The ideal balance of city agility and open-road ease, with genuine adventure styling.', // TODO desc
-    price_per_day: 800,
-    price_per_week: null,
-    price_per_month: null,
+    prices: {low: 800, high: 1000, peak: 1500}, // TODO prix réels
     image_url: '/scooters/adv350.jpg',
     sort_order: 5,
     is_active: true
@@ -108,9 +98,7 @@ export const mockScooterModels: ScooterModel[] = [
       'Confortable et polyvalent, un maxi-scooter accessible pour rouler à deux sur toute l’île.', // TODO desc
     description_en:
       'Comfortable and versatile, an accessible maxi-scooter for riding two-up across the island.', // TODO desc
-    price_per_day: 700,
-    price_per_week: null,
-    price_per_month: null,
+    prices: {low: 700, high: 900, peak: 1300}, // TODO prix réels
     image_url: '/scooters/xmax.jpg',
     sort_order: 6,
     is_active: true
@@ -125,9 +113,7 @@ export const mockScooterModels: ScooterModel[] = [
       'Le best-seller élégant : souple, économe et facile à prendre en main.', // TODO desc
     description_en:
       'The elegant best-seller: smooth, fuel-efficient and easy to ride.', // TODO desc
-    price_per_day: 250,
-    price_per_week: null,
-    price_per_month: null,
+    prices: {low: 250, high: 350, peak: 500}, // TODO prix réels
     image_url: '/scooters/pcx.jpg',
     sort_order: 7,
     is_active: true

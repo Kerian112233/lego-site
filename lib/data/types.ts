@@ -5,10 +5,13 @@
  * ni les composants qui les consomment.
  */
 
+/** Clés de saison tarifaire (le calendrier des saisons vit dans content.seasons). */
+export type SeasonKey = 'low' | 'high' | 'peak';
+
 /**
- * §5.1 — miroir exact de la future vue publique `public_scooter_models`.
- * Le mock local est typé sur cette forme ; en Phase 2, la vue Supabase renverra
- * la même structure.
+ * §5.1 — miroir de la future vue publique `public_scooter_models`.
+ * Tarification SAISONNIÈRE : un prix/jour par saison (basse / haute / peak).
+ * Phase 2 : la vue Supabase devra exposer ces colonnes de prix par saison.
  */
 export interface ScooterModel {
   id: string;
@@ -18,9 +21,8 @@ export interface ScooterModel {
   cc: number;
   description_fr: string;
   description_en: string;
-  price_per_day: number;
-  price_per_week: number | null;
-  price_per_month: number | null;
+  /** Prix/jour par saison (฿). */
+  prices: Record<SeasonKey, number>;
   image_url: string;
   sort_order: number;
   is_active: boolean;

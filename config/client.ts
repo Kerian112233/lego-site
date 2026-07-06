@@ -62,6 +62,10 @@ export interface ClientConfig {
     /** Préfixe des références lisibles, ex: "LEXO" → LEXO-2026-0042. */
     referencePrefix: string;
   };
+  pricing: {
+    /** ฿ pour 1 € — conversion indicative affichée sous les prix (ajustable). */
+    thbPerEur: number;
+  };
   /** Contenus éditoriaux par locale (frontière i18n : cf. content/types.ts). */
   content: Record<Locale, SiteContent>;
 }
@@ -106,6 +110,9 @@ export const clientConfig: ClientConfig = {
   },
   booking: {
     referencePrefix: 'LEXO'
+  },
+  pricing: {
+    thbPerEur: 38 // indicatif — à ajuster
   },
   content: {fr, en}
 };
