@@ -80,7 +80,7 @@ export const clientConfig: ClientConfig = {
     logo: '/brand/logo.svg',
     favicon: '/brand/favicon.svg',
     tagline: 'Location de scooters à Phuket — récents et assurés',
-    heroImage: '/brand/hero-placeholder.svg'
+    heroImage: '/brand/image-1784169125499.jpg'
   },
   theme: {
     // Palette LEXO d'exemple : teal océan + accent ambre tropical.
