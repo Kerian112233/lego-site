@@ -77,7 +77,7 @@ export const clientConfig: ClientConfig = {
   },
   brand: {
     name: 'LEXO',
-    logo: '/brand/logo.svg',
+    logo: '/brand/logo-lexo.jpg',
     favicon: '/brand/favicon.svg',
     tagline: 'Location de scooters à Phuket — récents et assurés',
     heroImage: '/brand/image-1784169125499.jpg'
