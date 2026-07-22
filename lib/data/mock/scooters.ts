@@ -23,7 +23,7 @@ export const mockScooterModels: ScooterModel[] = [
       'Le SUV des scooters : look aventure, position haute et agilité en ville comme sur les routes de l’île.', // TODO desc
     description_en:
       'The SUV of scooters: adventure looks, an upright ride and agility both in town and on the island’s roads.', // TODO desc
-    prices: {low: 400, high: 500, peak: 700}, // TODO prix réels
+    prices: {low: 350, high: 500, peak: 650},
     image_url: '/scooters/adv160.jpg',
     sort_order: 1,
     is_active: true
@@ -60,7 +60,7 @@ export const mockScooterModels: ScooterModel[] = [
   },
   {
     id: '11111111-1111-1111-1111-111111111104',
-    name: 'Yamaha NMAX 155',
+    name: 'Yamaha NMAX 2019/2020',
     brand: 'Yamaha',
     category: 'Automatique 155cc',
     cc: 155,
@@ -68,9 +68,24 @@ export const mockScooterModels: ScooterModel[] = [
       'Compact et économique, parfait pour se faufiler et explorer Phuket au quotidien.', // TODO desc
     description_en:
       'Compact and economical, perfect for weaving through traffic and exploring Phuket day to day.', // TODO desc
-    prices: {low: 350, high: 450, peak: 650}, // TODO prix réels
+    prices: {low: 300, high: 350, peak: 400},
     image_url: '/scooters/nmax.jpg',
     sort_order: 4,
+    is_active: true
+  },
+  {
+    id: '11111111-1111-1111-1111-111111111108',
+    name: 'Yamaha NMAX 2024-2026',
+    brand: 'Yamaha',
+    category: 'Automatique 155cc',
+    cc: 155,
+    description_fr:
+      'La dernière génération du NMAX : design modernisé, plus de technologies et toujours aussi agile.', // TODO desc
+    description_en:
+      'The latest NMAX generation: updated design, more tech and just as nimble.', // TODO desc
+    prices: {low: 350, high: 450, peak: 550},
+    image_url: '/scooters/nmax.jpg',
+    sort_order: 5,
     is_active: true
   },
   {
@@ -113,7 +128,7 @@ export const mockScooterModels: ScooterModel[] = [
       'Le best-seller élégant : souple, économe et facile à prendre en main.', // TODO desc
     description_en:
       'The elegant best-seller: smooth, fuel-efficient and easy to ride.', // TODO desc
-    prices: {low: 250, high: 350, peak: 500}, // TODO prix réels
+    prices: {low: 350, high: 450, peak: 550},
     image_url: '/scooters/pcx.jpg',
     sort_order: 7,
     is_active: true
