@@ -1,6 +1,6 @@
 'use client';
 
-import {useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useTranslations} from 'next-intl';
 import {Link} from '@/i18n/navigation';
 import {Button} from '@/components/ui/button';
@@ -31,6 +31,8 @@ export function ScooterCard({
   const ts = useTranslations('search');
   const seasons = clientConfig.content[locale].seasons;
   const [selectedId, setSelectedId] = useState(initialModel.id);
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const hasVariants = variants && variants.length > 1;
   const model = hasVariants
@@ -38,9 +40,18 @@ export function ScooterCard({
     : initialModel;
 
   const unavailable = new Set(unavailableIds);
-  const isAvailable = hasVariants
-    ? !unavailable.has(model.id)
-    : available;
+  const isAvailable = hasVariants ? !unavailable.has(model.id) : available;
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
 
   const nf = new Intl.NumberFormat(locale);
   const eurFmt = new Intl.NumberFormat(locale, {
@@ -61,6 +72,10 @@ export function ScooterCard({
         query: {model: model.id, start: range.start, end: range.end}
       }
     : {pathname: '/reserver' as const, query: {model: model.id}};
+
+  const selectedVariant = hasVariants
+    ? variants.find((v) => v.id === selectedId)
+    : null;
 
   return (
     <Card
@@ -91,31 +106,64 @@ export function ScooterCard({
         </div>
 
         {hasVariants && (
-          <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2">
-            <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Modèle
-            </span>
-            <div className="relative flex-1">
-              <select
-                id={`variant-${initialModel.id}`}
-                value={selectedId}
-                onChange={(e) => setSelectedId(e.target.value)}
-                className="w-full appearance-none bg-transparent pr-6 text-sm font-medium text-foreground focus:outline-none cursor-pointer"
-              >
+          <div ref={dropdownRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              className="flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2 text-left transition-colors hover:bg-muted/70"
+            >
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Modèle
+              </span>
+              <span className="flex flex-1 items-center justify-between gap-2">
+                <span className="text-sm font-medium text-foreground">
+                  {selectedVariant?.variant_label}
+                </span>
+                <svg
+                  className={cn(
+                    'shrink-0 text-muted-foreground transition-transform duration-200',
+                    open && 'rotate-180'
+                  )}
+                  width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2.5"
+                  strokeLinecap="round" strokeLinejoin="round"
+                >
+                  <path d="m6 9 6 6 6-6"/>
+                </svg>
+              </span>
+            </button>
+
+            {open && (
+              <div className="absolute left-0 right-0 top-full z-20 mt-1 overflow-hidden rounded-lg border border-border bg-background shadow-lg">
                 {variants.map((v) => (
-                  <option key={v.id} value={v.id}>
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedId(v.id);
+                      setOpen(false);
+                    }}
+                    className={cn(
+                      'flex w-full items-center justify-between px-3 py-2.5 text-sm transition-colors hover:bg-muted/60',
+                      v.id === selectedId
+                        ? 'font-semibold text-primary'
+                        : 'text-foreground'
+                    )}
+                  >
                     {v.variant_label}
-                  </option>
+                    {v.id === selectedId && (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" strokeWidth="2.5"
+                        strokeLinecap="round" strokeLinejoin="round"
+                        className="text-primary"
+                      >
+                        <path d="M20 6 9 17l-5-5"/>
+                      </svg>
+                    )}
+                  </button>
                 ))}
-              </select>
-              <svg
-                className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground"
-                width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-              >
-                <path d="m6 9 6 6 6-6"/>
-              </svg>
-            </div>
+              </div>
+            )}
           </div>
         )}
 
