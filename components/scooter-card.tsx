@@ -91,22 +91,31 @@ export function ScooterCard({
         </div>
 
         {hasVariants && (
-          <div className="flex items-center gap-2">
-            <label htmlFor={`variant-${initialModel.id}`} className="shrink-0 text-sm font-medium">
+          <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2">
+            <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Modèle
-            </label>
-            <select
-              id={`variant-${initialModel.id}`}
-              value={selectedId}
-              onChange={(e) => setSelectedId(e.target.value)}
-              className="flex-1 rounded-md border border-border bg-background px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              {variants.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.variant_label}
-                </option>
-              ))}
-            </select>
+            </span>
+            <div className="relative flex-1">
+              <select
+                id={`variant-${initialModel.id}`}
+                value={selectedId}
+                onChange={(e) => setSelectedId(e.target.value)}
+                className="w-full appearance-none bg-transparent pr-6 text-sm font-medium text-foreground focus:outline-none cursor-pointer"
+              >
+                {variants.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.variant_label}
+                  </option>
+                ))}
+              </select>
+              <svg
+                className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground"
+                width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+              >
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </div>
           </div>
         )}
 
