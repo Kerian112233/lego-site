@@ -10,11 +10,41 @@ import type {Locale} from '@/i18n/routing';
 
 const ALL = '__all__';
 
-/**
- * Catalogue : recherche par dates + filtre catégorie + grille responsive.
- * Ne suppose RIEN sur le nombre de modèles. Dispo par dates simulée côté serveur
- * (getUnavailableModelIds) : les indispos sont grisés, pas masqués.
- */
+type ModelOrGroup =
+  | {type: 'single'; model: ScooterModel}
+  | {type: 'group'; variants: ScooterModel[]};
+
+function groupModels(models: ScooterModel[]): ModelOrGroup[] {
+  const result: ModelOrGroup[] = [];
+  const groupMap = new Map<string, ScooterModel[]>();
+  const order: string[] = [];
+
+  for (const m of models) {
+    if (m.variant_group) {
+      if (!groupMap.has(m.variant_group)) {
+        groupMap.set(m.variant_group, []);
+        order.push('group:' + m.variant_group);
+      }
+      groupMap.get(m.variant_group)!.push(m);
+    } else {
+      order.push('single:' + m.id);
+    }
+  }
+
+  const seen = new Set<string>();
+  for (const m of models) {
+    const key = m.variant_group ? 'group:' + m.variant_group : 'single:' + m.id;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    if (m.variant_group) {
+      result.push({type: 'group', variants: groupMap.get(m.variant_group)!});
+    } else {
+      result.push({type: 'single', model: m});
+    }
+  }
+  return result;
+}
+
 export function ScooterCatalog({
   models,
   locale,
@@ -31,7 +61,6 @@ export function ScooterCatalog({
   const [category, setCategory] = useState<string>(ALL);
   const unavailable = useMemo(() => new Set(unavailableIds), [unavailableIds]);
 
-  // Catégories uniques dans l'ordre d'apparition (donc trié par sort_order).
   const categories = useMemo(() => {
     const seen = new Set<string>();
     const list: string[] = [];
@@ -50,12 +79,13 @@ export function ScooterCatalog({
         ? models
         : models.filter((m) => m.category === category);
     if (!range) return list;
-    // Dates sélectionnées : on montre tout mais on remonte les disponibles.
     return [...list].sort(
       (a, b) =>
         (unavailable.has(a.id) ? 1 : 0) - (unavailable.has(b.id) ? 1 : 0)
     );
   }, [models, category, range, unavailable]);
+
+  const grouped = useMemo(() => groupModels(filtered), [filtered]);
 
   const availableCount = filtered.filter((m) => !unavailable.has(m.id)).length;
 
@@ -95,21 +125,33 @@ export function ScooterCatalog({
           : t('results', {count: filtered.length})}
       </p>
 
-      {filtered.length === 0 ? (
+      {grouped.length === 0 ? (
         <p className="py-12 text-center text-muted-foreground">
           {t('noResults')}
         </p>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((model) => (
-            <ScooterCard
-              key={model.id}
-              model={model}
-              locale={locale}
-              available={!unavailable.has(model.id)}
-              range={range}
-            />
-          ))}
+          {grouped.map((item) =>
+            item.type === 'single' ? (
+              <ScooterCard
+                key={item.model.id}
+                model={item.model}
+                locale={locale}
+                available={!unavailable.has(item.model.id)}
+                range={range}
+              />
+            ) : (
+              <ScooterCard
+                key={item.variants[0].variant_group}
+                model={item.variants[0]}
+                variants={item.variants}
+                locale={locale}
+                available={item.variants.some((v) => !unavailable.has(v.id))}
+                range={range}
+                unavailableIds={unavailableIds}
+              />
+            )
+          )}
         </div>
       )}
     </div>

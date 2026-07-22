@@ -26,6 +26,10 @@ export interface ScooterModel {
   image_url: string;
   sort_order: number;
   is_active: boolean;
+  /** Regroupe les variantes d'un même modèle (ex: 'tmax', 'nmax', 'xadv'). */
+  variant_group?: string;
+  /** Label court affiché dans le sélecteur de variante (ex: 'Iron', '2023'). */
+  variant_label?: string;
 }
 
 /**

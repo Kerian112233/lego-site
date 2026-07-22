@@ -1,3 +1,6 @@
+'use client';
+
+import {useState} from 'react';
 import {useTranslations} from 'next-intl';
 import {Link} from '@/i18n/navigation';
 import {Button} from '@/components/ui/button';
@@ -9,23 +12,35 @@ import type {Locale} from '@/i18n/routing';
 
 const SEASONS = ['low', 'high', 'peak'] as const satisfies readonly SeasonKey[];
 
-/** Carte modèle : image, description + tarifs saisonniers (§5.1). */
 export function ScooterCard({
-  model,
+  model: initialModel,
+  variants,
   locale,
   available = true,
-  range
+  range,
+  unavailableIds = []
 }: {
   model: ScooterModel;
+  variants?: ScooterModel[];
   locale: Locale;
-  /** Disponible pour les dates sélectionnées (défaut true = pas de recherche par dates). */
   available?: boolean;
-  /** Dates sélectionnées, reportées dans le lien de réservation. */
   range?: {start: string; end: string};
+  unavailableIds?: string[];
 }) {
   const t = useTranslations('catalog');
   const ts = useTranslations('search');
   const seasons = clientConfig.content[locale].seasons;
+  const [selectedId, setSelectedId] = useState(initialModel.id);
+
+  const hasVariants = variants && variants.length > 1;
+  const model = hasVariants
+    ? (variants.find((v) => v.id === selectedId) ?? initialModel)
+    : initialModel;
+
+  const unavailable = new Set(unavailableIds);
+  const isAvailable = hasVariants
+    ? !unavailable.has(model.id)
+    : available;
 
   const nf = new Intl.NumberFormat(locale);
   const eurFmt = new Intl.NumberFormat(locale, {
@@ -51,17 +66,16 @@ export function ScooterCard({
     <Card
       className={cn(
         'flex h-full flex-col overflow-hidden pt-0',
-        !available && 'opacity-60'
+        !isAvailable && 'opacity-60'
       )}
     >
       <div className="relative aspect-[4/3] bg-muted">
-        {/* image_url peut être vide (photo pas encore fournie) → placeholder neutre. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={model.image_url || '/scooters/placeholder.svg'}
           alt={model.name}
           loading="lazy"
-          className={cn('size-full object-cover', !available && 'grayscale')}
+          className={cn('size-full object-cover', !isAvailable && 'grayscale')}
         />
         <span className="absolute left-3 top-3 rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium shadow-sm">
           {model.category}
@@ -75,6 +89,26 @@ export function ScooterCard({
             {model.cc} {t('cc')}
           </span>
         </div>
+
+        {hasVariants && (
+          <div className="flex flex-wrap gap-1.5">
+            {variants.map((v) => (
+              <button
+                key={v.id}
+                onClick={() => setSelectedId(v.id)}
+                className={cn(
+                  'rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors',
+                  v.id === model.id
+                    ? 'border-primary bg-primary text-primary-foreground'
+                    : 'border-border bg-background text-muted-foreground hover:border-primary hover:text-primary'
+                )}
+              >
+                {v.variant_label}
+              </button>
+            ))}
+          </div>
+        )}
+
         <p className="line-clamp-2 text-sm text-muted-foreground">
           {description}
         </p>
@@ -110,7 +144,7 @@ export function ScooterCard({
       </CardContent>
 
       <CardFooter>
-        {available ? (
+        {isAvailable ? (
           <Button
             className="w-full"
             nativeButton={false}
