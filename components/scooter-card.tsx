@@ -91,21 +91,22 @@ export function ScooterCard({
         </div>
 
         {hasVariants && (
-          <div className="flex flex-wrap gap-1.5">
-            {variants.map((v) => (
-              <button
-                key={v.id}
-                onClick={() => setSelectedId(v.id)}
-                className={cn(
-                  'rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors',
-                  v.id === model.id
-                    ? 'border-primary bg-primary text-primary-foreground'
-                    : 'border-border bg-background text-muted-foreground hover:border-primary hover:text-primary'
-                )}
-              >
-                {v.variant_label}
-              </button>
-            ))}
+          <div className="flex items-center gap-2">
+            <label htmlFor={`variant-${initialModel.id}`} className="shrink-0 text-sm font-medium">
+              Modèle
+            </label>
+            <select
+              id={`variant-${initialModel.id}`}
+              value={selectedId}
+              onChange={(e) => setSelectedId(e.target.value)}
+              className="flex-1 rounded-md border border-border bg-background px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              {variants.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.variant_label}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 
