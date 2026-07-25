@@ -68,10 +68,6 @@ export const en: SiteContent = {
         name: 'Akrapovic sport exhaust',
         description: 'Sportier sound and looks on compatible models.'
       },
-      {
-        name: 'Top-case',
-        description: 'Lockable storage for your belongings and a helmet.'
-      }
     ]
   },
   faq: {

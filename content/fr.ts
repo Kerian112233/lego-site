@@ -71,10 +71,6 @@ export const fr: SiteContent = {
         name: 'Échappement sport Akrapovic',
         description: 'Sonorité et look sport sur les modèles compatibles.'
       },
-      {
-        name: 'Top-case',
-        description: 'Rangement verrouillable pour vos affaires et un casque.'
-      }
     ]
   },
   faq: {
