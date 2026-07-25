@@ -98,26 +98,6 @@ export function ScooterCatalog({
         className="mx-auto max-w-sm"
       />
 
-      {categories.length > 1 && (
-        <div
-          className="mt-8 flex flex-wrap items-center justify-center gap-2"
-          role="group"
-          aria-label={t('filterLabel')}
-        >
-          <FilterPill active={category === ALL} onClick={() => setCategory(ALL)}>
-            {t('allCategories')}
-          </FilterPill>
-          {categories.map((cat) => (
-            <FilterPill
-              key={cat}
-              active={category === cat}
-              onClick={() => setCategory(cat)}
-            >
-              {cat}
-            </FilterPill>
-          ))}
-        </div>
-      )}
 
       <p className="mb-6 mt-6 text-center text-sm text-muted-foreground">
         {range
