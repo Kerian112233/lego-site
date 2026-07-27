@@ -2,13 +2,11 @@
 
 import {useMemo, useState} from 'react';
 import {useTranslations} from 'next-intl';
-import {Button} from '@/components/ui/button';
-import {ScooterCard} from '@/components/scooter-card';
 import {DateSearch} from '@/components/date-search';
+import {ModelDetailPanel} from '@/components/model-detail-panel';
+import {modelGalleryPhotos, getGalleryKey} from '@/lib/data/gallery';
 import type {ScooterModel} from '@/lib/data/types';
 import type {Locale} from '@/i18n/routing';
-
-const ALL = '__all__';
 
 type ModelOrGroup =
   | {type: 'single'; model: ScooterModel}
@@ -17,21 +15,17 @@ type ModelOrGroup =
 function groupModels(models: ScooterModel[]): ModelOrGroup[] {
   const result: ModelOrGroup[] = [];
   const groupMap = new Map<string, ScooterModel[]>();
-  const order: string[] = [];
+  const seen = new Set<string>();
 
   for (const m of models) {
     if (m.variant_group) {
       if (!groupMap.has(m.variant_group)) {
         groupMap.set(m.variant_group, []);
-        order.push('group:' + m.variant_group);
       }
       groupMap.get(m.variant_group)!.push(m);
-    } else {
-      order.push('single:' + m.id);
     }
   }
 
-  const seen = new Set<string>();
   for (const m of models) {
     const key = m.variant_group ? 'group:' + m.variant_group : 'single:' + m.id;
     if (seen.has(key)) continue;
@@ -43,6 +37,56 @@ function groupModels(models: ScooterModel[]): ModelOrGroup[] {
     }
   }
   return result;
+}
+
+function FamilyCard({
+  item,
+  locale,
+  onClick
+}: {
+  item: ModelOrGroup;
+  locale: Locale;
+  onClick: () => void;
+}) {
+  const rep = item.type === 'group' ? item.variants[0] : item.model;
+  const cover = rep.image_url ?? '/scooters/placeholder.svg';
+
+  const minPrice =
+    item.type === 'group'
+      ? Math.min(...item.variants.map((v) => v.prices.low))
+      : item.model.prices.low;
+
+  const nf = new Intl.NumberFormat(locale);
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="group relative overflow-hidden rounded-2xl bg-muted text-left transition-transform duration-200 active:scale-95"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={cover}
+        alt={rep.name}
+        loading="lazy"
+        className="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 p-3">
+        <p className="text-sm font-bold leading-tight text-white">{rep.name}</p>
+        <p className="mt-0.5 text-xs text-white/75">
+          {locale === 'fr' ? 'Dès' : 'From'}{' '}
+          <span className="font-semibold text-white">{nf.format(minPrice)} ฿</span>
+          {locale === 'fr' ? ' / mois' : ' / mo'}
+        </p>
+      </div>
+      {item.type === 'group' && (
+        <span className="absolute right-2 top-2 rounded-full bg-black/50 px-2 py-0.5 text-xs text-white">
+          {item.variants.length} {locale === 'fr' ? 'modèles' : 'models'}
+        </span>
+      )}
+    </button>
+  );
 }
 
 export function ScooterCatalog({
@@ -58,36 +102,36 @@ export function ScooterCatalog({
 }) {
   const t = useTranslations('catalog');
   const ts = useTranslations('search');
-  const [category, setCategory] = useState<string>(ALL);
+  const [selected, setSelected] = useState<ModelOrGroup | null>(null);
+
+  const grouped = useMemo(() => groupModels(models), [models]);
+
   const unavailable = useMemo(() => new Set(unavailableIds), [unavailableIds]);
+  const availableCount = useMemo(
+    () => models.filter((m) => !unavailable.has(m.id)).length,
+    [models, unavailable]
+  );
 
-  const categories = useMemo(() => {
-    const seen = new Set<string>();
-    const list: string[] = [];
-    for (const m of models) {
-      if (!seen.has(m.category)) {
-        seen.add(m.category);
-        list.push(m.category);
-      }
-    }
-    return list;
-  }, [models]);
+  if (selected) {
+    const rep = selected.type === 'group' ? selected.variants[0] : selected.model;
+    const galleryKey = getGalleryKey(rep.name, rep.variant_group);
+    const photos = modelGalleryPhotos[galleryKey] ?? [rep.image_url ?? ''];
+    const variantModels =
+      selected.type === 'group' ? selected.variants : [selected.model];
 
-  const filtered = useMemo(() => {
-    const list =
-      category === ALL
-        ? models
-        : models.filter((m) => m.category === category);
-    if (!range) return list;
-    return [...list].sort(
-      (a, b) =>
-        (unavailable.has(a.id) ? 1 : 0) - (unavailable.has(b.id) ? 1 : 0)
+    return (
+      <div className="mt-8">
+        <ModelDetailPanel
+          models={variantModels}
+          galleryPhotos={photos}
+          locale={locale}
+          unavailableIds={unavailableIds}
+          range={range}
+          onBack={() => setSelected(null)}
+        />
+      </div>
     );
-  }, [models, category, range, unavailable]);
-
-  const grouped = useMemo(() => groupModels(filtered), [filtered]);
-
-  const availableCount = filtered.filter((m) => !unavailable.has(m.id)).length;
+  }
 
   return (
     <div className="mt-8">
@@ -98,11 +142,10 @@ export function ScooterCatalog({
         className="mx-auto max-w-sm"
       />
 
-
       <p className="mb-6 mt-6 text-center text-sm text-muted-foreground">
         {range
           ? ts('available', {count: availableCount})
-          : t('results', {count: filtered.length})}
+          : t('results', {count: models.length})}
       </p>
 
       {grouped.length === 0 ? (
@@ -110,52 +153,23 @@ export function ScooterCatalog({
           {t('noResults')}
         </p>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {grouped.map((item) =>
-            item.type === 'single' ? (
-              <ScooterCard
-                key={item.model.id}
-                model={item.model}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {grouped.map((item) => {
+            const key =
+              item.type === 'group'
+                ? 'group:' + item.variants[0].variant_group
+                : 'single:' + item.model.id;
+            return (
+              <FamilyCard
+                key={key}
+                item={item}
                 locale={locale}
-                available={!unavailable.has(item.model.id)}
-                range={range}
+                onClick={() => setSelected(item)}
               />
-            ) : (
-              <ScooterCard
-                key={item.variants[0].variant_group}
-                model={item.variants[0]}
-                variants={item.variants}
-                locale={locale}
-                available={item.variants.some((v) => !unavailable.has(v.id))}
-                range={range}
-                unavailableIds={unavailableIds}
-              />
-            )
-          )}
+            );
+          })}
         </div>
       )}
     </div>
-  );
-}
-
-function FilterPill({
-  active,
-  onClick,
-  children
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <Button
-      type="button"
-      size="sm"
-      variant={active ? 'default' : 'outline'}
-      aria-pressed={active}
-      onClick={onClick}
-    >
-      {children}
-    </Button>
   );
 }
