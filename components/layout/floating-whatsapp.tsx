@@ -2,7 +2,7 @@
 
 import {useTranslations} from 'next-intl';
 import {clientConfig} from '@/config/client';
-import {buildWhatsAppUrl} from '@/lib/data/booking';
+import {buildWhatsAppUrl} from '@/lib/data/whatsapp';
 
 /** Bouton WhatsApp flottant, présent sur tout le site (cf. Bike It, §6). */
 export function FloatingWhatsApp() {

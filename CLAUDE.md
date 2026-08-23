@@ -11,10 +11,11 @@ Next.js 16 (App Router) · TypeScript · Tailwind v4 + shadcn/ui · i18n `next-i
 ## Règles non négociables
 1. **White-label** — aucun élément spécifique à un client en dur dans le code. Tout le spécifique (marque, logo, couleurs, WhatsApp, contact, contenus, FAQ, zones, données) vit dans **`config/client.ts`**. Nouveau client = éditer cette config + déposer un logo, **zéro composant touché**.
 2. **Data layer isolé** — les composants n'accèdent JAMAIS aux données en direct. Ils appellent uniquement `getScooterModels()` (`lib/data/models.ts`) et `submitBookingRequest()` (`lib/data/booking.ts`). Toute la source de données est derrière ces deux fonctions.
-3. **Phase actuelle = FRONT-ONLY** — PAS de Supabase, PAS de server action, PAS de Turnstile, JAMAIS de `service_role`.
-   - `getScooterModels()` → renvoie un **mock local**, typé exactement comme la future vue `public_scooter_models` (voir `docs/kickoff.md` §5.1).
-   - `submitBookingRequest(payload)` → construit le **lien WhatsApp** (client-side, fonctionne pour de vrai) et renvoie une réf mock (signature = §5.2).
-   - Le branchement Supabase = **Phase 2**, en remplaçant seulement l'intérieur de ces deux fichiers.
+3. **Phase actuelle = PHASE 2 (branchée base)** — Supabase actif via la clé ANON uniquement, server action + Turnstile en place. `service_role` reste **interdite**.
+   - `getScooterModels()` → toujours un **mock local** : la vue `public_scooter_models` du kickoff §5.1 n'a jamais été déployée. Prix, descriptions et photos vivent dans le repo.
+   - `getUnavailableModelIds()` → RPC **`get_public_availability()`** (dispo par famille, à l'instant T). ⚠️ La RPC n'accepte aucune plage de dates : le filtre « sur mes dates » est une approximation assumée (cf. commentaire dans `lib/data/models.ts`).
+   - `submitBookingRequest()` → **server action** (`lib/data/booking.ts`) : validation serveur → vérification Turnstile → RPC **`create_client_lead`**. Le lien WhatsApp est construit APRÈS, côté client, à partir de la référence renvoyée.
+   - La RPC réelle ne prend ni dates ni `model_id` : ils sont sérialisés dans `p_message`, le modèle est dupliqué dans `p_scooter_interest`. Le contrat kickoff §5.2 (`create_booking_request(payload jsonb)`) est **caduc**.
 4. **Thème piloté par la config** — couleurs/typo via tokens CSS/Tailwind alimentés par `config/client.ts`. Aucune couleur en dur.
 5. **i18n** — tout texte visible passe par `next-intl` (fr + en). Aucun string en dur dans les composants.
    - **Frontière i18n (importante) :** tout texte **éditable / piloté par le client** (accroche hero, textes des sections, FAQ, zones + tarifs, contact) vit dans **`content/{fr,en}.ts`** (référencé via `config/client.ts`). Tout ce qui est **structurel au produit** et ne change pas d'un client à l'autre (nav, libellés de boutons, labels de formulaire, messages d'état) vit dans **`messages/{fr,en}.json`** (`next-intl`). En cas de doute : « le client voudrait-il l'éditer sans toucher au code ? » → oui = `content/`, non = `messages/`.

@@ -45,6 +45,8 @@
   "form": {
     "title": "Booking request",
     "fullName": "Full name",
+    "firstName": "First name",
+    "lastName": "Last name",
     "nationality": "Nationality",
     "email": "Email",
     "phone": "WhatsApp number",
@@ -57,11 +59,16 @@
     "optional": "optional",
     "selectModel": "Select a model",
     "redirectNote": "On submit, you'll be redirected to WhatsApp with a pre-filled message.",
+    "fallbackNote": "WhatsApp didn’t open?",
+    "openWhatsApp": "Open WhatsApp",
     "errors": {
       "required": "Required field",
       "dateOrder": "The end date must be after the start date.",
       "datePast": "The date cannot be in the past.",
-      "email": "Invalid email address."
+      "email": "Invalid email address.",
+      "validation": "Some fields are invalid. Please check the form.",
+      "turnstile": "Anti-spam check failed. Please try again.",
+      "server": "We could not send your request right now. Try again or reach us on WhatsApp."
     }
   },
   "whatsapp": {

@@ -45,6 +45,8 @@
   "form": {
     "title": "Demande de réservation",
     "fullName": "Nom complet",
+    "firstName": "Prénom",
+    "lastName": "Nom",
     "nationality": "Nationalité",
     "email": "E-mail",
     "phone": "Numéro WhatsApp",
@@ -57,11 +59,16 @@
     "optional": "optionnel",
     "selectModel": "Sélectionner un modèle",
     "redirectNote": "À l’envoi, vous serez redirigé vers WhatsApp avec un message pré-rempli.",
+    "fallbackNote": "WhatsApp ne s’est pas ouvert ?",
+    "openWhatsApp": "Ouvrir WhatsApp",
     "errors": {
       "required": "Champ obligatoire",
       "dateOrder": "La date de fin doit être après la date de début.",
       "datePast": "La date ne peut pas être dans le passé.",
-      "email": "Adresse e-mail invalide."
+      "email": "Adresse e-mail invalide.",
+      "validation": "Certains champs sont invalides. Vérifiez le formulaire.",
+      "turnstile": "Vérification anti-spam échouée. Merci de réessayer.",
+      "server": "Envoi impossible pour le moment. Réessayez ou contactez-nous sur WhatsApp."
     }
   },
   "whatsapp": {

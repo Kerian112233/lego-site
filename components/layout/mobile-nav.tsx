@@ -7,7 +7,7 @@ import {MenuIcon, XIcon} from 'lucide-react';
 import {Link, usePathname} from '@/i18n/navigation';
 import {Button} from '@/components/ui/button';
 import {clientConfig} from '@/config/client';
-import {buildWhatsAppUrl} from '@/lib/data/booking';
+import {buildWhatsAppUrl} from '@/lib/data/whatsapp';
 import type {Locale} from '@/i18n/routing';
 import {LanguageSwitcher} from './language-switcher';
 

@@ -33,33 +33,53 @@ export interface ScooterModel {
 }
 
 /**
- * §5.2 — payload attendu par la RPC `create_booking_request(payload jsonb)`.
+ * Payload du formulaire de demande.
+ *
+ * ⚠️ Le contrat kickoff §5.2 (`create_booking_request(payload jsonb)`) n'a PAS
+ * été déployé. La RPC réellement en prod est :
+ *   create_client_lead(p_first_name, p_last_name, p_phone, p_email,
+ *                      p_nationality, p_message, p_scooter_interest)
+ * → pas de dates, pas de model_id, pas de zone de livraison en colonne.
+ *
+ * Ce type reste le contrat côté SITE (ce que le formulaire collecte) ;
+ * `lib/data/booking.ts` fait la traduction vers les paramètres de la RPC :
+ * dates + modèle sont sérialisés dans `p_message`, le modèle est dupliqué
+ * dans `p_scooter_interest`.
+ *
+ * `pickup_zone` / `pickup_address` du §5.2 ont été retirés : LEXO ne livre pas
+ * et la RPC n'a aucune colonne pour les stocker (ils partaient déjà vides).
  */
 export interface BookingPayload {
-  full_name: string;
+  /** Requis par la RPC (`p_first_name`). */
+  first_name: string;
+  /** Requis par la RPC (`p_last_name`) — « — » si non fourni. */
+  last_name: string;
   nationality: string | null;
   email: string | null;
   phone: string;
+  /** Id du modèle dans le catalogue local (mock) — sert au site, pas à la base. */
   model_id: string;
+  /** Libellé lisible du modèle, envoyé tel quel dans `p_scooter_interest`. */
+  model_label: string;
   start_date: string; // YYYY-MM-DD
   end_date: string; // YYYY-MM-DD
-  pickup_zone: string;
-  pickup_address: string | null;
   message: string | null;
   locale: 'fr' | 'en';
   source: 'website';
 }
 
-/** §5.2 — retour de la RPC. */
+/** Succès : identifiant du lead créé + référence lisible dérivée. */
 export interface BookingResult {
   request_id: string;
   reference: string;
 }
 
 /**
- * Retour de `submitBookingRequest`. Étend le contrat §5.2 avec l'URL WhatsApp,
- * que la fonction construit dans les DEUX phases (cf. CLAUDE.md règle 3 & §6).
+ * Retour de la server action `submitBookingRequest`.
+ * Union discriminée plutôt qu'une exception : le formulaire doit pouvoir
+ * afficher un message précis (anti-spam refusé vs. panne serveur) sans
+ * transformer une erreur attendue en crash.
  */
-export interface SubmitBookingResult extends BookingResult {
-  whatsappUrl: string;
-}
+export type BookingActionResult =
+  | ({ok: true} & BookingResult)
+  | {ok: false; error: 'validation' | 'turnstile' | 'server'};
