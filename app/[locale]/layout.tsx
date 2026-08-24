@@ -9,6 +9,7 @@ import {fontVarClassNames} from '@/lib/fonts';
 import {SiteHeader} from '@/components/layout/site-header';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {FloatingWhatsApp} from '@/components/layout/floating-whatsapp';
+import {HashScroll} from '@/components/layout/hash-scroll';
 import '../globals.css';
 
 /**
@@ -89,6 +90,7 @@ export default async function LocaleLayout({
           <main className="flex-1">{children}</main>
           <SiteFooter locale={locale} />
           <FloatingWhatsApp />
+          <HashScroll />
         </NextIntlClientProvider>
       </body>
     </html>

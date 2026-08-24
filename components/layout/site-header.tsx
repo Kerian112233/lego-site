@@ -3,6 +3,7 @@ import {Link} from '@/i18n/navigation';
 import {Button} from '@/components/ui/button';
 import {cn} from '@/lib/utils';
 import {Logo} from './logo';
+import {AnchorLink} from './anchor-link';
 import {navLinks} from './nav-links';
 import {LanguageSwitcher} from './language-switcher';
 import {MobileNav} from './mobile-nav';
@@ -19,18 +20,21 @@ export function SiteHeader({locale: _locale}: {locale: Locale}) {
         {/* Desktop — les ancres n'apparaissent qu'à partir de lg : en dessous,
             la barre déborderait (logo + 5 liens + langue + CTA). */}
         <nav className="hidden items-center gap-5 text-sm font-medium md:flex lg:gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.key}
-              href={link.href}
-              className={cn(
-                'text-muted-foreground transition-colors hover:text-foreground',
-                link.anchor && 'hidden lg:inline'
-              )}
-            >
-              {t(`nav.${link.key}`)}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const className = cn(
+              'text-muted-foreground transition-colors hover:text-foreground',
+              link.anchor && 'hidden lg:inline'
+            );
+            return link.anchor ? (
+              <AnchorLink key={link.key} href={link.href} className={className}>
+                {t(`nav.${link.key}`)}
+              </AnchorLink>
+            ) : (
+              <Link key={link.key} href={link.href} className={className}>
+                {t(`nav.${link.key}`)}
+              </Link>
+            );
+          })}
         </nav>
         <div className="hidden items-center gap-4 md:flex">
           <LanguageSwitcher />
