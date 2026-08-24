@@ -4,8 +4,8 @@ import type {SiteContent} from './types';
 export const fr: SiteContent = {
   hero: {
     title: 'Louez votre scooter à Phuket en toute simplicité',
-    subtitle:
-      'Scooters récents et entretenus. Réservez en 2 minutes sur WhatsApp.',
+    subtitle: 'Le plus beau de Phuket est au bout de la route.',
+    note: 'Scooters récents et entretenus. Réservez en 2 minutes sur WhatsApp.',
     ctaPrimary: 'Réserver mon scooter',
     ctaSecondary: 'Voir les modèles'
   },
@@ -45,10 +45,6 @@ export const fr: SiteContent = {
         description: 'Récupérez votre scooter prêt à rouler à notre boutique de Kathu.'
       },
       {
-        title: 'Assurance incluse',
-        description: 'Couverture de base incluse dans chaque location.'
-      },
-      {
         title: '2 casques fournis',
         description: 'Casques homologués pour vous et votre passager.'
       },
@@ -80,7 +76,7 @@ export const fr: SiteContent = {
       {
         question: 'Ai-je besoin d’un permis ?',
         answer:
-          'Un permis moto international est recommandé et exigé par la loi thaïlandaise. Nous vous conseillons de rouler assuré et casqué.'
+          'Un permis moto international est recommandé et exigé par la loi thaïlandaise. Nous vous conseillons de rouler casqué.'
       },
       {
         question: 'Comment se passe la caution ?',
@@ -130,7 +126,7 @@ export const fr: SiteContent = {
   catalog: {
     title: 'Notre flotte de scooters',
     subtitle:
-      'Choisissez le modèle adapté à votre séjour. Assurance incluse, options disponibles.'
+      'Choisissez le modèle adapté à votre séjour. Options disponibles.'
   },
   seasons: {
     low: {name: 'Basse saison', period: 'du 01/05 au 30/11'},

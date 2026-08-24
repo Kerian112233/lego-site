@@ -11,9 +11,16 @@ export function Hero({content}: {content: SiteContent['hero']}) {
           <h1 className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
             {content.title}
           </h1>
-          <p className="mx-auto mt-5 max-w-md text-lg text-muted-foreground md:mx-0">
+          <p className="mx-auto mt-5 max-w-md text-lg text-foreground/80 md:mx-0 md:text-xl">
             {content.subtitle}
           </p>
+          {/* Ligne pratique, volontairement en retrait : l'accroche porte
+              l'émotion, celle-ci répond au « comment ». */}
+          {content.note && (
+            <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground md:mx-0">
+              {content.note}
+            </p>
+          )}
 
           <div className="mx-auto mt-8 max-w-sm md:mx-0">
             <DateSearch />

@@ -35,6 +35,8 @@ export interface SiteContent {
   hero: {
     title: string;
     subtitle: string;
+    /** Ligne pratique sous l'accroche, en plus petit. Optionnelle. */
+    note?: string;
     ctaPrimary: string;
     ctaSecondary: string;
   };

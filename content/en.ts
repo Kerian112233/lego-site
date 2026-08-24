@@ -4,8 +4,8 @@ import type {SiteContent} from './types';
 export const en: SiteContent = {
   hero: {
     title: 'Rent your scooter in Phuket, made simple',
-    subtitle:
-      'Recent, well-maintained scooters. Book in 2 minutes on WhatsApp.',
+    subtitle: 'The most beautiful part of Phuket is at the end of the road.',
+    note: 'Recent, well-maintained scooters. Book in 2 minutes on WhatsApp.',
     ctaPrimary: 'Book my scooter',
     ctaSecondary: 'View models'
   },
@@ -42,10 +42,6 @@ export const en: SiteContent = {
         description: 'Collect your ready-to-ride scooter at our Kathu shop.'
       },
       {
-        title: 'Insurance included',
-        description: 'Basic coverage included with every rental.'
-      },
-      {
         title: '2 helmets provided',
         description: 'Certified helmets for you and your passenger.'
       },
@@ -77,7 +73,7 @@ export const en: SiteContent = {
       {
         question: 'Do I need a licence?',
         answer:
-          'An international motorcycle licence is recommended and required by Thai law. We advise riding insured and with a helmet.'
+          'An international motorcycle licence is recommended and required by Thai law. We advise riding with a helmet.'
       },
       {
         question: 'How does the deposit work?',
@@ -127,7 +123,7 @@ export const en: SiteContent = {
   catalog: {
     title: 'Our scooter fleet',
     subtitle:
-      'Pick the model that fits your trip. Insurance included, add-on options available.'
+      'Pick the model that fits your trip. Add-on options available.'
   },
   seasons: {
     low: {name: 'Low season', period: '01/05 – 30/11'},

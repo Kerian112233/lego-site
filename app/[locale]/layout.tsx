@@ -31,7 +31,10 @@ export async function generateMetadata({
   const activeLocale: Locale = hasLocale(routing.locales, locale)
     ? locale
     : routing.defaultLocale;
-  const description = clientConfig.content[activeLocale].hero.subtitle;
+  // L'accroche du hero est éditoriale ; seule, elle ne décrit pas le service.
+  // On y accole la ligne pratique quand elle existe, pour une description utile.
+  const {subtitle, note} = clientConfig.content[activeLocale].hero;
+  const description = note ? `${subtitle} ${note}` : subtitle;
 
   // hreflang : une entrée par locale + x-default.
   const languages = Object.fromEntries(
