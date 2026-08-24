@@ -92,9 +92,6 @@ export function ScooterCard({
           loading="lazy"
           className={cn('size-full object-cover', !isAvailable && 'grayscale')}
         />
-        <span className="absolute left-3 top-3 rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium shadow-sm">
-          {model.category}
-        </span>
       </div>
 
       <CardContent className="flex flex-1 flex-col gap-3">
