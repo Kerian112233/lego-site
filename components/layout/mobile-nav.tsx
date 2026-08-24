@@ -9,6 +9,7 @@ import {Button} from '@/components/ui/button';
 import {clientConfig} from '@/config/client';
 import {buildWhatsAppUrl} from '@/lib/data/whatsapp';
 import type {Locale} from '@/i18n/routing';
+import {navLinks} from './nav-links';
 import {LanguageSwitcher} from './language-switcher';
 
 /**
@@ -78,18 +79,18 @@ export function MobileNav() {
 
             <div className="flex-1 overflow-y-auto overscroll-contain">
               <nav className="flex flex-col px-4 pt-3 text-base font-medium">
-                <Link
-                  href="/scooters"
-                  className="rounded-md py-2.5 text-foreground hover:text-primary"
-                >
-                  {t('nav.scooters')}
-                </Link>
-                <Link
-                  href="/reserver"
-                  className="rounded-md py-2.5 text-foreground hover:text-primary"
-                >
-                  {t('nav.book')}
-                </Link>
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.key}
+                    href={link.href}
+                    /* Une ancre ne change pas le pathname : l'effet de
+                       fermeture sur `pathname` ne se déclencherait pas. */
+                    onClick={() => setOpen(false)}
+                    className="rounded-md py-2.5 text-foreground hover:text-primary"
+                  >
+                    {t(`nav.${link.key}`)}
+                  </Link>
+                ))}
               </nav>
 
               <div className="px-4 py-3">

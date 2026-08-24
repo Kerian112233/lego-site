@@ -17,7 +17,9 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className={cn('py-16 md:py-24', className)}>
+    /* scroll-mt : le header sticky (h-16) ne doit pas recouvrir le titre
+       quand on arrive par une ancre de la nav. */
+    <section id={id} className={cn('scroll-mt-20 py-16 md:py-24', className)}>
       <div className="mx-auto max-w-6xl px-4">
         {(title || subtitle) && (
           <div className={cn('mx-auto max-w-2xl text-center', headerClassName)}>
