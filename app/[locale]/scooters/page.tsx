@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import {setRequestLocale} from 'next-intl/server';
 import {resolveLocale} from '@/i18n/routing';
 import {clientConfig} from '@/config/client';
-import {getScooterModels, getUnavailableModelIds} from '@/lib/data/models';
+import {getScooterModels, getModelAvailability} from '@/lib/data/models';
 import {buildPageMetadata} from '@/lib/seo';
 import {Section} from '@/components/section';
 import {ScooterCatalog} from '@/components/scooter-catalog';
@@ -38,9 +38,9 @@ export default async function ScootersPage({
 
   const {start, end} = await searchParams;
   const range = start && end ? {start, end} : undefined;
-  const unavailableIds = range
-    ? await getUnavailableModelIds(models, range.start, range.end)
-    : [];
+  const {unavailableIds, availableByModelId} = range
+    ? await getModelAvailability(models, range.start, range.end)
+    : {unavailableIds: [], availableByModelId: {}};
 
   return (
     <Section title={content.catalog.title} subtitle={content.catalog.subtitle}>
@@ -48,6 +48,7 @@ export default async function ScootersPage({
         models={models}
         locale={activeLocale}
         unavailableIds={unavailableIds}
+        availableByModelId={availableByModelId}
         range={range}
       />
     </Section>

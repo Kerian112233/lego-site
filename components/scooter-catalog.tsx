@@ -5,6 +5,7 @@ import {useTranslations} from 'next-intl';
 import {DateSearch} from '@/components/date-search';
 import {ModelDetailPanel} from '@/components/model-detail-panel';
 import {modelGalleryPhotos, getGalleryKey} from '@/lib/data/gallery';
+import {cn} from '@/lib/utils';
 import type {ScooterModel} from '@/lib/data/types';
 import type {Locale} from '@/i18n/routing';
 
@@ -42,12 +43,21 @@ function groupModels(models: ScooterModel[]): ModelOrGroup[] {
 function FamilyCard({
   item,
   locale,
+  availableCount,
+  unavailable,
   onClick
 }: {
   item: ModelOrGroup;
   locale: Locale;
+  /**
+   * Nb de scooters de la FAMILLE libres sur la période, ou undefined quand on
+   * n'a pas de dates / pas de correspondance au parc (on n'affirme rien).
+   */
+  availableCount?: number;
+  unavailable: boolean;
   onClick: () => void;
 }) {
+  const ts = useTranslations('search');
   const rep = item.type === 'group' ? item.variants[0] : item.model;
   const cover = rep.image_url ?? '/scooters/placeholder.svg';
 
@@ -62,7 +72,10 @@ function FamilyCard({
     <button
       type="button"
       onClick={onClick}
-      className="group relative overflow-hidden rounded-2xl bg-muted text-left transition-transform duration-200 active:scale-95"
+      className={cn(
+        'group relative overflow-hidden rounded-2xl bg-muted text-left transition-transform duration-200 active:scale-95',
+        unavailable && 'opacity-50 grayscale'
+      )}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -85,6 +98,16 @@ function FamilyCard({
           {item.variants.length} {locale === 'fr' ? 'modèles' : 'models'}
         </span>
       )}
+      {availableCount !== undefined && (
+        <span
+          className={cn(
+            'absolute left-2 top-2 rounded-full px-2 py-0.5 text-xs font-medium text-white',
+            availableCount === 0 ? 'bg-black/60' : 'bg-primary'
+          )}
+        >
+          {ts('availableBadge', {count: availableCount})}
+        </span>
+      )}
     </button>
   );
 }
@@ -93,11 +116,14 @@ export function ScooterCatalog({
   models,
   locale,
   unavailableIds,
+  availableByModelId,
   range
 }: {
   models: ScooterModel[];
   locale: Locale;
   unavailableIds: string[];
+  /** Dispo sur la période, par id de modèle (valeur de la FAMILLE en base). */
+  availableByModelId: Record<string, number>;
   range?: {start: string; end: string};
 }) {
   const t = useTranslations('catalog');
@@ -105,12 +131,21 @@ export function ScooterCatalog({
   const [selected, setSelected] = useState<ModelOrGroup | null>(null);
 
   const grouped = useMemo(() => groupModels(models), [models]);
-
   const unavailable = useMemo(() => new Set(unavailableIds), [unavailableIds]);
-  const availableCount = useMemo(
-    () => models.filter((m) => !unavailable.has(m.id)).length,
-    [models, unavailable]
-  );
+
+  /**
+   * Le compteur base est un compteur de FAMILLE : toutes les variantes d'une
+   * carte partagent la même valeur. On la lit sur les variantes connues du parc
+   * (undefined = modèle sans équivalent en base → aucun compteur affiché).
+   */
+  const cardAvailability = (item: ModelOrGroup) => {
+    const variants = item.type === 'group' ? item.variants : [item.model];
+    const counts = variants
+      .map((v) => availableByModelId[v.id])
+      .filter((c): c is number => typeof c === 'number');
+    if (counts.length === 0) return undefined;
+    return Math.max(...counts);
+  };
 
   if (selected) {
     const rep = selected.type === 'group' ? selected.variants[0] : selected.model;
@@ -126,6 +161,7 @@ export function ScooterCatalog({
           galleryPhotos={photos}
           locale={locale}
           unavailableIds={unavailableIds}
+          availableCount={cardAvailability(selected)}
           range={range}
           onBack={() => setSelected(null)}
         />
@@ -142,11 +178,19 @@ export function ScooterCatalog({
         className="mx-auto max-w-sm"
       />
 
+      {/*
+        Le compteur par carte vient de `get_availability_for_dates` (dispo réelle
+        sur la période demandée). Ici on n'annonce que la taille du catalogue.
+      */}
       <p className="mb-6 mt-6 text-center text-sm text-muted-foreground">
-        {range
-          ? ts('available', {count: availableCount})
-          : t('results', {count: models.length})}
+        {t('results', {count: models.length})}
       </p>
+
+      {range && (
+        <p className="mb-6 -mt-4 text-center text-sm text-muted-foreground">
+          {ts('availabilityOnRequest')}
+        </p>
+      )}
 
       {grouped.length === 0 ? (
         <p className="py-12 text-center text-muted-foreground">
@@ -159,11 +203,14 @@ export function ScooterCatalog({
               item.type === 'group'
                 ? 'group:' + item.variants[0].variant_group
                 : 'single:' + item.model.id;
+            const variants = item.type === 'group' ? item.variants : [item.model];
             return (
               <FamilyCard
                 key={key}
                 item={item}
                 locale={locale}
+                availableCount={cardAvailability(item)}
+                unavailable={variants.every((v) => unavailable.has(v.id))}
                 onClick={() => setSelected(item)}
               />
             );

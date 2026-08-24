@@ -16,6 +16,7 @@ export function ModelDetailPanel({
   galleryPhotos,
   locale,
   unavailableIds,
+  availableCount,
   range,
   onBack
 }: {
@@ -23,6 +24,13 @@ export function ModelDetailPanel({
   galleryPhotos: string[];
   locale: Locale;
   unavailableIds: string[];
+  /**
+   * Nb de scooters libres sur la période pour la FAMILLE affichée (la base ne
+   * compte pas par variante) — d'où l'affichage collé au titre de famille, et
+   * jamais au sélecteur de variante. `undefined` = pas de dates ou modèle sans
+   * équivalent au parc : on n'affiche rien.
+   */
+  availableCount?: number;
   range?: {start: string; end: string};
   onBack: () => void;
 }) {
@@ -106,7 +114,25 @@ export function ModelDetailPanel({
         {locale === 'fr' ? 'Retour' : 'Back'}
       </button>
 
-      <h2 className="mb-4 text-xl font-bold">{models[0].name}</h2>
+      <h2
+        className={cn(
+          'text-xl font-bold',
+          range && availableCount !== undefined ? 'mb-1' : 'mb-4'
+        )}
+      >
+        {models[0].name}
+      </h2>
+
+      {range && availableCount !== undefined && (
+        <p
+          className={cn(
+            'mb-4 text-sm font-medium',
+            availableCount === 0 ? 'text-muted-foreground' : 'text-primary'
+          )}
+        >
+          {ts('available', {count: availableCount})}
+        </p>
+      )}
 
       {/* Photo gallery — horizontal snap scroll */}
       <div className="relative overflow-hidden rounded-2xl bg-muted">

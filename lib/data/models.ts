@@ -1,15 +1,19 @@
 import 'server-only';
 import {mockScooterModels} from './mock/scooters';
+import {getAvailabilityForRange, type RangeAvailability} from './availability';
 import type {ScooterModel} from './types';
 
 /**
  * SEUL point de lecture du catalogue (CLAUDE.md règle 2).
  *
- * Phase 1 : renvoie le mock local, filtré `is_active` et trié par `sort_order`
- *           — exactement ce que fera la vue Supabase.
- * Phase 2 : remplacer UNIQUEMENT le corps de cette fonction par un SELECT sur
- *           `public_scooter_models` (anon key). Signature inchangée → zéro
- *           composant touché.
+ * Le CATALOGUE reste un mock local : la vue `public_scooter_models` prévue au
+ * kickoff §5.1 n'est PAS déployée (la base n'expose en anon que
+ * `get_availability_for_dates` et `create_client_lead`). Prix, descriptions et
+ * photos restent donc pilotés par le repo. Seule la DISPO vient de la base
+ * (cf. getModelAvailability).
+ *
+ * Le jour où la vue existe : remplacer UNIQUEMENT le corps de cette fonction
+ * par un SELECT anon. Signature inchangée → zéro composant touché.
  */
 export async function getScooterModels(): Promise<ScooterModel[]> {
   return mockScooterModels
@@ -29,34 +33,21 @@ export async function getScooterModelById(
 }
 
 /**
- * Disponibilité par dates — Phase 1 SIMULÉE (mock déterministe).
- * Renvoie les ids des modèles NON disponibles pour la période. Sans dates → [].
+ * Disponibilité sur une période — API du data layer consommée par les pages
+ * (CLAUDE.md règle 2).
  *
- * La dispo dépend du modèle ET des dates (démontre le mécanisme pour la démo).
- * Phase 2 : remplacer le corps par un appel Supabase (RPC/vue
- * `available_models(start, end)` croisant le calendrier des réservations),
- * signature inchangée → zéro composant touché.
+ * Ne contient AUCUNE logique : elle délègue à `getAvailabilityForRange`
+ * (`lib/data/availability.ts`), point de branchement unique côté base, qui
+ * interroge la RPC `get_availability_for_dates(p_start, p_end)` avec les dates
+ * choisies par le client.
+ *
+ * Sans dates, on ne demande rien et on n'affirme rien.
  */
-export async function getUnavailableModelIds(
+export async function getModelAvailability(
   models: ScooterModel[],
   startDate: string,
   endDate: string
-): Promise<string[]> {
-  if (!startDate || !endDate) return [];
-  return models
-    .filter((model) => !isMockAvailable(model.id, startDate, endDate))
-    .map((model) => model.id);
-}
-
-/** Mock : ~1 modèle sur 5 indisponible, stable pour un couple (modèle, dates). */
-function isMockAvailable(id: string, start: string, end: string): boolean {
-  return hashString(`${id}|${start}|${end}`) % 5 !== 0;
-}
-
-function hashString(value: string): number {
-  let hash = 0;
-  for (let i = 0; i < value.length; i++) {
-    hash = (hash * 31 + value.charCodeAt(i)) | 0;
-  }
-  return Math.abs(hash);
+): Promise<RangeAvailability> {
+  if (!startDate || !endDate) return {unavailableIds: [], availableByModelId: {}};
+  return getAvailabilityForRange(models, startDate, endDate);
 }
