@@ -76,7 +76,12 @@
       "validation": "Some fields are invalid. Please check the form.",
       "turnstile": "Anti-spam check failed. Please try again.",
       "server": "We could not send your request right now. Try again or reach us on WhatsApp."
-    }
+    },
+    "sectionRental": "Your rental",
+    "sectionContact": "Your details",
+    "sectionExtra": "Anything else",
+    "dates": "Rental dates",
+    "requiredHint": "Fields marked * are required."
   },
   "whatsapp": {
     "floatingLabel": "Need help? Message us",

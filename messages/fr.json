@@ -76,7 +76,12 @@
       "validation": "Certains champs sont invalides. Vérifiez le formulaire.",
       "turnstile": "Vérification anti-spam échouée. Merci de réessayer.",
       "server": "Envoi impossible pour le moment. Réessayez ou contactez-nous sur WhatsApp."
-    }
+    },
+    "sectionRental": "Votre location",
+    "sectionContact": "Vos coordonnées",
+    "sectionExtra": "Précisions",
+    "dates": "Dates de location",
+    "requiredHint": "Les champs marqués * sont obligatoires."
   },
   "whatsapp": {
     "floatingLabel": "Besoin d’aide ? Écrivez-nous",

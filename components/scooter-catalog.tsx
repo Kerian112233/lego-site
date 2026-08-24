@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useMemo, useState} from 'react';
+import {useMemo, useState} from 'react';
 import {useTranslations} from 'next-intl';
 import {useRouter} from '@/i18n/navigation';
 import {DateSearch} from '@/components/date-search';
@@ -18,6 +18,20 @@ function groupKey(item: ModelOrGroup): string {
   return item.type === 'group'
     ? 'group:' + item.variants[0].variant_group
     : 'single:' + item.model.id;
+}
+
+/** Clé de la carte contenant ce modèle (une famille peut avoir des variantes). */
+function keyOfModel(
+  grouped: ModelOrGroup[],
+  modelId?: string
+): string | null {
+  if (!modelId) return null;
+  const item = grouped.find((g) =>
+    g.type === 'group'
+      ? g.variants.some((v) => v.id === modelId)
+      : g.model.id === modelId
+  );
+  return item ? groupKey(item) : null;
 }
 
 function groupModels(models: ScooterModel[]): ModelOrGroup[] {
@@ -143,27 +157,28 @@ export function ScooterCatalog({
   const t = useTranslations('catalog');
   const ts = useTranslations('search');
   const router = useRouter();
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   const grouped = useMemo(() => groupModels(models), [models]);
   const unavailable = useMemo(() => new Set(unavailableIds), [unavailableIds]);
+
+  const [selectedKey, setSelectedKey] = useState<string | null>(() =>
+    keyOfModel(grouped, openModelId)
+  );
+
+  // Le composant peut rester monté d'une navigation à l'autre (seuls les
+  // searchParams changent) : on suit la prop, pas seulement l'init. Ajustement
+  // pendant le rendu plutôt qu'en effet — pas de rendu en cascade.
+  const [lastOpenModelId, setLastOpenModelId] = useState(openModelId);
+  if (openModelId !== lastOpenModelId) {
+    setLastOpenModelId(openModelId);
+    const key = keyOfModel(grouped, openModelId);
+    if (key) setSelectedKey(key);
+  }
 
   const selected = useMemo(
     () => grouped.find((item) => groupKey(item) === selectedKey) ?? null,
     [grouped, selectedKey]
   );
-
-  // Le composant peut rester monté d'une navigation à l'autre (seuls les
-  // searchParams changent) : on synchronise sur la prop, pas à l'init.
-  useEffect(() => {
-    if (!openModelId) return;
-    const item = grouped.find((g) =>
-      g.type === 'group'
-        ? g.variants.some((v) => v.id === openModelId)
-        : g.model.id === openModelId
-    );
-    if (item) setSelectedKey(groupKey(item));
-  }, [openModelId, grouped]);
 
   /** Retour à la grille : on retire aussi `?model=` pour que l'URL ne rouvre
       pas le panneau au rafraîchissement. */
@@ -201,6 +216,9 @@ export function ScooterCatalog({
     return (
       <div className="mt-8">
         <ModelDetailPanel
+          /* Remonte le panneau d'une famille à l'autre : variante choisie et
+             index photo ne doivent pas survivre au changement de modèle. */
+          key={groupKey(selected)}
           models={variantModels}
           galleryPhotos={photos}
           locale={locale}
