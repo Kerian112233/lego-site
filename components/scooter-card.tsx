@@ -5,6 +5,7 @@ import {useTranslations} from 'next-intl';
 import {Link} from '@/i18n/navigation';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardFooter} from '@/components/ui/card';
+import {DateSearch} from '@/components/date-search';
 import {cn} from '@/lib/utils';
 import {clientConfig} from '@/config/client';
 import type {ScooterModel, SeasonKey} from '@/lib/data/types';
@@ -198,8 +199,17 @@ export function ScooterCard({
         </div>
       </CardContent>
 
-      <CardFooter>
-        {isAvailable ? (
+      <CardFooter className="flex-col items-stretch gap-2">
+        {!range ? (
+          /* Pas de dates → on ne peut RIEN affirmer sur la dispo : le CTA ouvre
+             le calendrier, et c'est lui qui mène au catalogue daté. */
+          <DateSearch
+            variant="cta"
+            triggerLabel={ts('checkAvailability')}
+            submitLabel={ts('checkAvailability')}
+            extraQuery={{model: model.id}}
+          />
+        ) : isAvailable ? (
           <Button
             className="w-full"
             nativeButton={false}

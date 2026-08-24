@@ -27,7 +27,7 @@ export default async function ScootersPage({
   searchParams
 }: {
   params: Promise<{locale: string}>;
-  searchParams: Promise<{start?: string; end?: string}>;
+  searchParams: Promise<{start?: string; end?: string; model?: string}>;
 }) {
   const {locale} = await params;
   setRequestLocale(locale);
@@ -36,7 +36,7 @@ export default async function ScootersPage({
   const content = clientConfig.content[activeLocale];
   const models = await getScooterModels();
 
-  const {start, end} = await searchParams;
+  const {start, end, model} = await searchParams;
   const range = start && end ? {start, end} : undefined;
   const {unavailableIds, availableByModelId} = range
     ? await getModelAvailability(models, range.start, range.end)
@@ -50,6 +50,7 @@ export default async function ScootersPage({
         unavailableIds={unavailableIds}
         availableByModelId={availableByModelId}
         range={range}
+        openModelId={model}
       />
     </Section>
   );

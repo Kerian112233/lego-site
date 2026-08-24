@@ -1,7 +1,8 @@
 'use client';
 
-import {useMemo, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {useTranslations} from 'next-intl';
+import {useRouter} from '@/i18n/navigation';
 import {DateSearch} from '@/components/date-search';
 import {ModelDetailPanel} from '@/components/model-detail-panel';
 import {modelGalleryPhotos, getGalleryKey} from '@/lib/data/gallery';
@@ -12,6 +13,12 @@ import type {Locale} from '@/i18n/routing';
 type ModelOrGroup =
   | {type: 'single'; model: ScooterModel}
   | {type: 'group'; variants: ScooterModel[]};
+
+function groupKey(item: ModelOrGroup): string {
+  return item.type === 'group'
+    ? 'group:' + item.variants[0].variant_group
+    : 'single:' + item.model.id;
+}
 
 function groupModels(models: ScooterModel[]): ModelOrGroup[] {
   const result: ModelOrGroup[] = [];
@@ -117,7 +124,8 @@ export function ScooterCatalog({
   locale,
   unavailableIds,
   availableByModelId,
-  range
+  range,
+  openModelId
 }: {
   models: ScooterModel[];
   locale: Locale;
@@ -125,13 +133,49 @@ export function ScooterCatalog({
   /** Dispo sur la période, par id de modèle (valeur de la FAMILLE en base). */
   availableByModelId: Record<string, number>;
   range?: {start: string; end: string};
+  /**
+   * `?model=` : modèle à rouvrir au chargement. Posé par le CTA « Voir la
+   * disponibilité » d'une carte, qui passe d'abord par le calendrier — le
+   * visiteur retrouve son modèle, cette fois daté.
+   */
+  openModelId?: string;
 }) {
   const t = useTranslations('catalog');
   const ts = useTranslations('search');
-  const [selected, setSelected] = useState<ModelOrGroup | null>(null);
+  const router = useRouter();
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   const grouped = useMemo(() => groupModels(models), [models]);
   const unavailable = useMemo(() => new Set(unavailableIds), [unavailableIds]);
+
+  const selected = useMemo(
+    () => grouped.find((item) => groupKey(item) === selectedKey) ?? null,
+    [grouped, selectedKey]
+  );
+
+  // Le composant peut rester monté d'une navigation à l'autre (seuls les
+  // searchParams changent) : on synchronise sur la prop, pas à l'init.
+  useEffect(() => {
+    if (!openModelId) return;
+    const item = grouped.find((g) =>
+      g.type === 'group'
+        ? g.variants.some((v) => v.id === openModelId)
+        : g.model.id === openModelId
+    );
+    if (item) setSelectedKey(groupKey(item));
+  }, [openModelId, grouped]);
+
+  /** Retour à la grille : on retire aussi `?model=` pour que l'URL ne rouvre
+      pas le panneau au rafraîchissement. */
+  function closePanel() {
+    setSelectedKey(null);
+    if (openModelId) {
+      router.replace({
+        pathname: '/scooters',
+        query: range ? {start: range.start, end: range.end} : {}
+      });
+    }
+  }
 
   /**
    * Le compteur base est un compteur de FAMILLE : toutes les variantes d'une
@@ -163,7 +207,8 @@ export function ScooterCatalog({
           unavailableIds={unavailableIds}
           availableCount={cardAvailability(selected)}
           range={range}
-          onBack={() => setSelected(null)}
+          initialModelId={openModelId}
+          onBack={closePanel}
         />
       </div>
     );
@@ -199,10 +244,7 @@ export function ScooterCatalog({
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {grouped.map((item) => {
-            const key =
-              item.type === 'group'
-                ? 'group:' + item.variants[0].variant_group
-                : 'single:' + item.model.id;
+            const key = groupKey(item);
             const variants = item.type === 'group' ? item.variants : [item.model];
             return (
               <FamilyCard
@@ -211,7 +253,7 @@ export function ScooterCatalog({
                 locale={locale}
                 availableCount={cardAvailability(item)}
                 unavailable={variants.every((v) => unavailable.has(v.id))}
-                onClick={() => setSelected(item)}
+                onClick={() => setSelectedKey(key)}
               />
             );
           })}

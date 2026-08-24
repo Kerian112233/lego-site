@@ -4,6 +4,7 @@ import {useEffect, useRef, useState} from 'react';
 import {useTranslations} from 'next-intl';
 import {Link} from '@/i18n/navigation';
 import {Button} from '@/components/ui/button';
+import {DateSearch} from '@/components/date-search';
 import {cn} from '@/lib/utils';
 import {clientConfig} from '@/config/client';
 import type {ScooterModel, SeasonKey} from '@/lib/data/types';
@@ -18,6 +19,7 @@ export function ModelDetailPanel({
   unavailableIds,
   availableCount,
   range,
+  initialModelId,
   onBack
 }: {
   models: ScooterModel[];
@@ -32,6 +34,8 @@ export function ModelDetailPanel({
    */
   availableCount?: number;
   range?: {start: string; end: string};
+  /** Variante à présélectionner (retour depuis le calendrier avec `?model=`). */
+  initialModelId?: string;
   onBack: () => void;
 }) {
   const t = useTranslations('catalog');
@@ -39,7 +43,11 @@ export function ModelDetailPanel({
   const seasons = clientConfig.content[locale].seasons;
 
   const hasVariants = models.length > 1;
-  const [selectedId, setSelectedId] = useState(models[0].id);
+  const [selectedId, setSelectedId] = useState(
+    initialModelId && models.some((m) => m.id === initialModelId)
+      ? initialModelId
+      : models[0].id
+  );
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [photoIdx, setPhotoIdx] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -279,15 +287,37 @@ export function ModelDetailPanel({
           ))}
         </div>
 
-        {/* Book button */}
-        {isAvailable ? (
-          <Button
-            className="w-full"
-            nativeButton={false}
-            render={<Link href={reserveHref} />}
-          >
-            {t('bookThisModel')}
-          </Button>
+        {/* CTA — flux « dates d'abord » : sans période choisie, on ne propose
+            pas de réserver, on propose de regarder la dispo. */}
+        {!range ? (
+          <div className="space-y-2">
+            <DateSearch
+              variant="cta"
+              triggerLabel={ts('checkAvailability')}
+              submitLabel={ts('checkAvailability')}
+              extraQuery={{model: model.id}}
+            />
+            <p className="text-center text-xs text-muted-foreground">
+              {ts('pickDatesFirst')}
+            </p>
+          </div>
+        ) : isAvailable ? (
+          <div className="space-y-2">
+            <Button
+              className="w-full"
+              nativeButton={false}
+              render={<Link href={reserveHref} />}
+            >
+              {t('bookThisModel')}
+            </Button>
+            {/* La base n'a rien répondu pour ce modèle (mode dégradé ou modèle
+                sans équivalent au parc) : on ne prétend pas qu'il est libre. */}
+            {availableCount === undefined && (
+              <p className="text-center text-xs text-muted-foreground">
+                {ts('availabilityOnRequest')}
+              </p>
+            )}
+          </div>
         ) : (
           <Button className="w-full" variant="secondary" disabled>
             {ts('unavailable')}

@@ -33,7 +33,9 @@
     "availableBadge": "{count, plural, =0 {Indisponible} one {# dispo} other {# dispos}}",
     "unavailable": "Indisponible pour ces dates",
     "pickDates": "Choisissez vos dates pour voir les scooters disponibles.",
-    "availabilityOnRequest": "Disponibilité sur vos dates confirmée par WhatsApp."
+    "availabilityOnRequest": "Disponibilité sur vos dates confirmée par WhatsApp.",
+    "checkAvailability": "Voir la disponibilité",
+    "pickDatesFirst": "Choisissez vos dates pour connaître la disponibilité de ce modèle."
   },
   "catalog": {
     "perDay": "/ jour",

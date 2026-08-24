@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import {setRequestLocale} from 'next-intl/server';
+import {redirect} from '@/i18n/navigation';
 import {resolveLocale} from '@/i18n/routing';
 import {clientConfig} from '@/config/client';
 import {getScooterModels} from '@/lib/data/models';
@@ -36,6 +37,17 @@ export default async function ReserverPage({
   const content = clientConfig.content[activeLocale];
   const models = await getScooterModels();
   const {model, start, end} = await searchParams;
+
+  /**
+   * Garde-fou du flux « dates d'abord » : un lien vers un MODÈLE précis sans
+   * période (URL partagée, favori, ancien lien) repasse par le catalogue daté.
+   * Plus aucune UI ne produit ce cas — c'est la ceinture de sécurité.
+   * L'accès générique à /reserver (sans `model`) reste ouvert : le visiteur y
+   * choisit modèle ET dates dans le formulaire.
+   */
+  if (model && !(start && end)) {
+    redirect({href: {pathname: '/scooters', query: {model}}, locale});
+  }
 
   return (
     <Section title={content.reserve.title} subtitle={content.reserve.subtitle}>
