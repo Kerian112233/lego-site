@@ -5,7 +5,7 @@ export const fr: SiteContent = {
   hero: {
     title: 'Louez votre scooter à Phuket en toute simplicité',
     subtitle:
-      'Scooters récents et entretenus, assurance incluse. Réservez en 2 minutes sur WhatsApp.',
+      'Scooters récents et entretenus. Réservez en 2 minutes sur WhatsApp.',
     ctaPrimary: 'Réserver mon scooter',
     ctaSecondary: 'Voir les modèles'
   },

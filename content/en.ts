@@ -5,7 +5,7 @@ export const en: SiteContent = {
   hero: {
     title: 'Rent your scooter in Phuket, made simple',
     subtitle:
-      'Recent, well-maintained scooters, insurance included. Book in 2 minutes on WhatsApp.',
+      'Recent, well-maintained scooters. Book in 2 minutes on WhatsApp.',
     ctaPrimary: 'Book my scooter',
     ctaSecondary: 'View models'
   },
