@@ -6,6 +6,7 @@ import {getScooterModels, getModelAvailability} from '@/lib/data/models';
 import {buildPageMetadata} from '@/lib/seo';
 import {Section} from '@/components/section';
 import {ScooterCatalog} from '@/components/scooter-catalog';
+import {dateParam} from '@/lib/dates';
 
 export async function generateMetadata({
   params
@@ -27,7 +28,8 @@ export default async function ScootersPage({
   searchParams
 }: {
   params: Promise<{locale: string}>;
-  searchParams: Promise<{start?: string; end?: string; model?: string}>;
+  /** Next renvoie un tableau pour une clé répétée : jamais de `string` supposé. */
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const {locale} = await params;
   setRequestLocale(locale);
@@ -36,7 +38,11 @@ export default async function ScootersPage({
   const content = clientConfig.content[activeLocale];
   const models = await getScooterModels();
 
-  const {start, end, model} = await searchParams;
+  const query = await searchParams;
+  // Paramètres d'URL nettoyés (clé répétée, date impossible → ignorés).
+  const start = dateParam(query.start);
+  const end = dateParam(query.end);
+  const model = typeof query.model === 'string' ? query.model : undefined;
   const range = start && end ? {start, end} : undefined;
   const {unavailableIds, availableByModelId} = range
     ? await getModelAvailability(models, range.start, range.end)

@@ -14,19 +14,7 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover';
 import {cn} from '@/lib/utils';
-
-function toISO(d: Date): string {
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${d.getFullYear()}-${m}-${day}`;
-}
-
-function parseISO(value?: string): Date | undefined {
-  if (!value) return undefined;
-  const [y, m, d] = value.split('-').map(Number);
-  if (!y || !m || !d) return undefined;
-  return new Date(y, m - 1, d);
-}
+import {parseISO, toISO, todayISO} from '@/lib/dates';
 
 /**
  * Recherche par dates via calendrier de plage (arrivée → départ) → /scooters.
@@ -132,12 +120,18 @@ export function DateSearch({
           className="w-auto max-w-[calc(100vw-2rem)] p-0"
           align="start"
         >
+          {/* `resetOnSelect` : un tap sur une période déjà complète en démarre
+              une nouvelle, et une période exige DEUX taps (arrivée puis départ)
+              — un seul tap ne valide plus une « période » d'un jour par mégarde.
+              `defaultMonth` : on rouvre sur les dates déjà choisies. */}
           <Calendar
             mode="range"
             selected={range}
+            defaultMonth={range?.from}
+            resetOnSelect
             onSelect={setRange}
             numberOfMonths={months}
-            disabled={{before: new Date()}}
+            disabled={{before: parseISO(todayISO()) ?? new Date()}}
             locale={locale === 'fr' ? fr : enUS}
             className="[--cell-size:2.5rem] p-3"
             autoFocus

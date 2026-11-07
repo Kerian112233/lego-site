@@ -49,7 +49,7 @@ export function MobileNav() {
         type="button"
         aria-label={t('nav.menu')}
         onClick={() => setOpen(true)}
-        className="inline-flex size-9 items-center justify-center rounded-md text-foreground md:hidden"
+        className="inline-flex size-9 items-center justify-center rounded-md text-foreground lg:hidden"
       >
         <MenuIcon className="size-5" />
       </button>
@@ -58,7 +58,7 @@ export function MobileNav() {
           résoudre le `fixed` par rapport au header (64px) au lieu du viewport. */}
       {open &&
         createPortal(
-          <div className="fixed inset-0 z-50 md:hidden">
+          <div className="fixed inset-0 z-50 lg:hidden">
             <div
               className="absolute inset-0 bg-black/50"
               onClick={() => setOpen(false)}

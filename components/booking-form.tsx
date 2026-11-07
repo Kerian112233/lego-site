@@ -19,6 +19,7 @@ import {cn} from '@/lib/utils';
 import {clientConfig} from '@/config/client';
 import {submitBookingRequest} from '@/lib/data/booking';
 import {buildWhatsAppUrl} from '@/lib/data/whatsapp';
+import {parseISO, toISO, todayISO} from '@/lib/dates';
 import type {BookingPayload, ScooterModel} from '@/lib/data/types';
 
 type FormState = {
@@ -35,8 +36,6 @@ type FormState = {
 
 type Errors = Partial<Record<keyof FormState, string>>;
 
-const todayISO = () => new Date().toISOString().slice(0, 10);
-
 /** Vide en dev / Phase 1 → widget non rendu et vérification serveur désactivée. */
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
@@ -46,19 +45,6 @@ const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
  */
 const fieldClass =
   'h-12 w-full rounded-xl border-input bg-background px-4 text-base shadow-none transition-colors focus-visible:border-ring focus-visible:ring-4 focus-visible:ring-ring/15 aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive/20';
-
-function toISO(d: Date): string {
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${d.getFullYear()}-${m}-${day}`;
-}
-
-function parseISO(value?: string): Date | undefined {
-  if (!value) return undefined;
-  const [y, m, d] = value.split('-').map(Number);
-  if (!y || !m || !d) return undefined;
-  return new Date(y, m - 1, d);
-}
 
 /**
  * Formulaire de demande de réservation (Phase 2, branché base).
@@ -183,14 +169,27 @@ export function BookingForm({
     setSubmitting(true);
     setFormError(null);
 
-    const result = await submitBookingRequest(payload, turnstileToken);
-
-    if (!result.ok) {
+    // Le token Turnstile est à usage unique : après tout échec, nouveau challenge.
+    const fail = (error: string) => {
       setSubmitting(false);
-      // Un token Turnstile est à usage unique : on relance un challenge.
       setTurnstileToken(null);
       setTurnstileKey((k) => k + 1);
-      setFormError(t(`errors.${result.error}`));
+      setFormError(t(`errors.${error}`));
+    };
+
+    let result: Awaited<ReturnType<typeof submitBookingRequest>>;
+    try {
+      result = await submitBookingRequest(payload, turnstileToken);
+    } catch {
+      // Échec de TRANSPORT de l'action serveur (réseau coupé sur mobile, page
+      // ouverte avant un nouveau déploiement…) : la promesse rejette côté
+      // client. Sans ce catch, le bouton restait bloqué sur « Envoi… ».
+      fail('server');
+      return;
+    }
+
+    if (!result.ok) {
+      fail(result.error);
       return;
     }
 
@@ -265,10 +264,12 @@ export function BookingForm({
             className="sm:col-span-2"
           >
             <DateRangeField
+              id="dates"
               start={values.start_date}
               end={values.end_date}
               invalid={!!(errors.start_date || errors.end_date)}
               placeholder={ts('datesPlaceholder')}
+              confirmLabel={t('datesConfirm')}
               onChange={(start_date, end_date) =>
                 setValues((v) => ({...v, start_date, end_date}))
               }
@@ -352,7 +353,6 @@ export function BookingForm({
               className={fieldClass}
               value={values.nationality}
               onChange={set('nationality')}
-              autoComplete="country-name"
             />
           </Field>
         </Fieldset>
@@ -432,16 +432,21 @@ export function BookingForm({
  * formulaire : aucune navigation, aucune logique d'envoi ici.
  */
 function DateRangeField({
+  id,
   start,
   end,
   invalid,
   placeholder,
+  confirmLabel,
   onChange
 }: {
+  /** Relie le <label> du champ au déclencheur (et le message d'erreur). */
+  id: string;
   start: string;
   end: string;
   invalid: boolean;
   placeholder: string;
+  confirmLabel: string;
   onChange: (start: string, end: string) => void;
 }) {
   const locale = useLocale();
@@ -477,6 +482,8 @@ function DateRangeField({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
+        id={id}
+        aria-describedby={invalid ? `${id}-error` : undefined}
         render={
           <Button
             type="button"
@@ -495,9 +502,16 @@ function DateRangeField({
         className="w-auto max-w-[calc(100vw-2rem)] p-0"
         align="start"
       >
+        {/* Dates souvent PRÉ-REMPLIES (flux « dates d'abord ») :
+            - `defaultMonth` ouvre sur la période choisie, pas sur le mois courant ;
+            - `resetOnSelect` : sur une période complète, un tap en démarre une
+              NOUVELLE au lieu d'allonger l'ancienne (12→15, tap 20 puis 25 donnait
+              12→25 — 13 jours envoyés au lieu de 5). */}
         <Calendar
           mode="range"
           selected={range}
+          defaultMonth={range?.from}
+          resetOnSelect
           onSelect={(next) =>
             onChange(
               next?.from ? toISO(next.from) : '',
@@ -505,7 +519,7 @@ function DateRangeField({
             )
           }
           numberOfMonths={months}
-          disabled={{before: new Date()}}
+          disabled={{before: parseISO(todayISO()) ?? new Date()}}
           locale={locale === 'fr' ? fr : enUS}
           className="[--cell-size:2.5rem] p-3"
           autoFocus
@@ -518,7 +532,7 @@ function DateRangeField({
             disabled={!range?.from || !range?.to}
             onClick={() => setOpen(false)}
           >
-            OK
+            {confirmLabel}
           </Button>
         </div>
       </PopoverContent>
@@ -570,11 +584,22 @@ function Field({
         <label htmlFor={id} className="text-sm font-medium">
           {label}
           {required && <span className="text-destructive"> *</span>}
+          {/* Le « optionnel » visible est hors du label (aligné à droite) :
+              copie lue par les lecteurs d'écran dans le nom du champ. */}
+          {hint && <span className="sr-only"> ({hint})</span>}
         </label>
-        {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
+        {hint && (
+          <span aria-hidden className="text-xs text-muted-foreground">
+            {hint}
+          </span>
+        )}
       </div>
       {children}
-      {error && <p className="text-xs font-medium text-destructive">{error}</p>}
+      {error && (
+        <p id={`${id}-error`} className="text-xs font-medium text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

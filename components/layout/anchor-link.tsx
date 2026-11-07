@@ -2,6 +2,7 @@
 
 import {useLocale} from 'next-intl';
 import {usePathname} from '@/i18n/navigation';
+import {scrollToHash} from './scroll-to-hash';
 
 /**
  * Lien vers une section de la page d'accueil.
@@ -35,6 +36,17 @@ export function AnchorLink({
   const hash = href.slice(href.indexOf('#'));
 
   function handleClick(event: React.MouseEvent<HTMLAnchorElement>) {
+    // Cmd/Ctrl/Shift/Alt-clic ou bouton non principal : on laisse le navigateur
+    // ouvrir un onglet / une fenêtre, comme le fait next/link.
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
     onNavigate?.();
     if (pathname !== '/') return; // autre page : navigation native
 
@@ -50,11 +62,7 @@ export function AnchorLink({
     // `behavior: 'instant'` explicite : la page porte `scroll-behavior: smooth`
     // (globals.css), et sur l'accueil ce scroll animé se fait annuler au bout
     // d'une dizaine de pixels — le lien resterait alors sans effet visible.
-    setTimeout(() => {
-      document
-        .querySelector(hash)
-        ?.scrollIntoView({behavior: 'instant', block: 'start'});
-    }, 0);
+    setTimeout(() => scrollToHash(hash), 0);
   }
 
   return (

@@ -1,6 +1,7 @@
 'use client';
 
 import {useEffect} from 'react';
+import {scrollToHash} from './scroll-to-hash';
 
 /**
  * Positionne la page sur l'ancre de l'URL après un chargement complet.
@@ -13,22 +14,35 @@ import {useEffect} from 'react';
  *
  * On repositionne donc explicitement, et une seconde fois au `load` pour tenir
  * compte des images. Aucun effet sur une URL sans ancre.
+ *
+ * Ce second passage est ANNULÉ dès que le visiteur interagit (défilement, tap,
+ * touche) : sur mobile lent, le `load` arrive tard et ramenait sinon le visiteur
+ * en arrière alors qu'il avait déjà bougé.
  */
+const USER_INPUT = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
+
 export function HashScroll() {
   useEffect(() => {
     const hash = window.location.hash;
     if (hash.length < 2) return;
 
-    const scroll = () => {
-      document
-        .querySelector(hash)
-        ?.scrollIntoView({behavior: 'instant', block: 'start'});
+    scrollToHash(hash);
+    if (document.readyState === 'complete') return;
+
+    const cancel = () => {
+      window.removeEventListener('load', onLoad);
+      USER_INPUT.forEach((type) => window.removeEventListener(type, cancel));
+    };
+    const onLoad = () => {
+      cancel();
+      scrollToHash(hash);
     };
 
-    scroll();
-    if (document.readyState === 'complete') return;
-    window.addEventListener('load', scroll, {once: true});
-    return () => window.removeEventListener('load', scroll);
+    window.addEventListener('load', onLoad, {once: true});
+    USER_INPUT.forEach((type) =>
+      window.addEventListener(type, cancel, {passive: true, once: true})
+    );
+    return cancel;
   }, []);
 
   return null;

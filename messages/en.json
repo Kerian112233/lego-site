@@ -49,7 +49,8 @@
     "results": "{count, plural, =0 {No scooters} one {# scooter} other {# scooters}}",
     "noResults": "No models match this filter.",
     "fromShort": "From",
-    "variantsCount": "{count, plural, one {# model} other {# models}}"
+    "variantsCount": "{count, plural, one {# model} other {# models}}",
+    "variantLabel": "Model"
   },
   "form": {
     "title": "Booking request",
@@ -83,7 +84,8 @@
     "sectionContact": "Your details",
     "sectionExtra": "Anything else",
     "dates": "Rental dates",
-    "requiredHint": "Fields marked * are required."
+    "requiredHint": "Fields marked * are required.",
+    "datesConfirm": "OK"
   },
   "whatsapp": {
     "floatingLabel": "Need help? Message us",

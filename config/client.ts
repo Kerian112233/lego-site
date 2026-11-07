@@ -61,6 +61,9 @@ export interface ClientConfig {
   booking: {
     /** Préfixe des références lisibles, ex: "LEXO" → LEXO-2026-0042. */
     referencePrefix: string;
+    /** Fuseau IANA de la boutique : définit « aujourd'hui » pour le calendrier
+     *  et la validation des dates (client ET serveur), ex: 'Asia/Bangkok'. */
+    timezone: string;
   };
   pricing: {
     /** ฿ pour 1 € — conversion indicative affichée sous les prix (ajustable). */
@@ -109,7 +112,8 @@ export const clientConfig: ClientConfig = {
     googleReviewsUrl: 'https://share.google/qf2A0PPv8qgOvNIeo'
   },
   booking: {
-    referencePrefix: 'LEXO'
+    referencePrefix: 'LEXO',
+    timezone: 'Asia/Bangkok'
   },
   pricing: {
     thbPerEur: 38 // indicatif — à ajuster

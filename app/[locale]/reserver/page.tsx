@@ -7,6 +7,7 @@ import {getScooterModels} from '@/lib/data/models';
 import {buildPageMetadata} from '@/lib/seo';
 import {Section} from '@/components/section';
 import {BookingForm} from '@/components/booking-form';
+import {dateParam} from '@/lib/dates';
 
 export async function generateMetadata({
   params
@@ -28,15 +29,20 @@ export default async function ReserverPage({
   searchParams
 }: {
   params: Promise<{locale: string}>;
-  searchParams: Promise<{model?: string; start?: string; end?: string}>;
+  /** Next renvoie un tableau pour une clé répétée : jamais de `string` supposé. */
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const {locale} = await params;
   setRequestLocale(locale);
 
   const activeLocale = resolveLocale(locale);
   const content = clientConfig.content[activeLocale];
-  const models = await getScooterModels();
-  const {model, start, end} = await searchParams;
+  const query = await searchParams;
+  // Paramètres d'URL nettoyés : clé répétée ou date impossible (2026-11-31)
+  // → ignorés, au lieu de faire planter le rendu ou d'envoyer une date fausse.
+  const model = typeof query.model === 'string' ? query.model : undefined;
+  const start = dateParam(query.start);
+  const end = dateParam(query.end);
 
   /**
    * Garde-fou du flux « dates d'abord » : un lien vers un MODÈLE précis sans
@@ -48,6 +54,8 @@ export default async function ReserverPage({
   if (model && !(start && end)) {
     redirect({href: {pathname: '/scooters', query: {model}}, locale});
   }
+
+  const models = await getScooterModels();
 
   return (
     <Section title={content.reserve.title} subtitle={content.reserve.subtitle}>

@@ -177,11 +177,13 @@ export function ScooterCatalog({
   // Le composant peut rester monté d'une navigation à l'autre (seuls les
   // searchParams changent) : on suit la prop, pas seulement l'init. Ajustement
   // pendant le rendu plutôt qu'en effet — pas de rendu en cascade.
+  // Dans LES DEUX SENS : `?model=` retiré (lien « Scooters » du header) referme
+  // le panneau ; avant, il restait ouvert sur une URL sans dates. Un panneau
+  // ouvert d'un clic sur une carte ne touche pas à l'URL → non concerné.
   const [lastOpenModelId, setLastOpenModelId] = useState(openModelId);
   if (openModelId !== lastOpenModelId) {
     setLastOpenModelId(openModelId);
-    const key = keyOfModel(grouped, openModelId);
-    if (key) setSelectedKey(key);
+    setSelectedKey(keyOfModel(grouped, openModelId));
   }
 
   const selected = useMemo(

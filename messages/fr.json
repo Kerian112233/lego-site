@@ -49,7 +49,8 @@
     "results": "{count, plural, =0 {Aucun scooter} one {# scooter} other {# scooters}}",
     "noResults": "Aucun modèle ne correspond à ce filtre.",
     "fromShort": "Dès",
-    "variantsCount": "{count, plural, one {# modèle} other {# modèles}}"
+    "variantsCount": "{count, plural, one {# modèle} other {# modèles}}",
+    "variantLabel": "Modèle"
   },
   "form": {
     "title": "Demande de réservation",
@@ -83,7 +84,8 @@
     "sectionContact": "Vos coordonnées",
     "sectionExtra": "Précisions",
     "dates": "Dates de location",
-    "requiredHint": "Les champs marqués * sont obligatoires."
+    "requiredHint": "Les champs marqués * sont obligatoires.",
+    "datesConfirm": "OK"
   },
   "whatsapp": {
     "floatingLabel": "Besoin d’aide ? Écrivez-nous",

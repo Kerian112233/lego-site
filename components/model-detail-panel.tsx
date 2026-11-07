@@ -203,7 +203,7 @@ export function ModelDetailPanel({
               className="flex w-full items-center justify-between gap-3 rounded-xl border border-border bg-muted/40 px-4 py-3 text-left transition-colors hover:bg-muted/70"
             >
               <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Modèle
+                {t('variantLabel')}
               </span>
               <span className="flex flex-1 items-center justify-between gap-2">
                 <span className="text-sm font-medium text-foreground">
