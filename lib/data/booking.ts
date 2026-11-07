@@ -3,6 +3,7 @@
 import {headers} from 'next/headers';
 import {getSupabaseClient, isSupabaseConfigured} from '@/lib/supabase/server';
 import {verifyTurnstileToken} from '@/lib/security/turnstile';
+import {isISODate, todayISO} from '@/lib/dates';
 import {clientConfig} from '@/config/client';
 import type {BookingActionResult, BookingPayload} from './types';
 
@@ -70,8 +71,10 @@ export async function submitBookingRequest(
 
 /** Validation serveur — miroir des règles du formulaire, jamais déléguée au client. */
 function isValidPayload(payload: BookingPayload): boolean {
-  const today = new Date().toISOString().slice(0, 10);
-  const isDate = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value);
+  // « Aujourd'hui » de la BOUTIQUE (même référence que le calendrier et le
+  // formulaire), et seulement des dates réelles (pas de 31 novembre).
+  const today = todayISO();
+  const isDate = isISODate;
 
   if (!payload.first_name?.trim()) return false;
   if (!payload.phone?.trim()) return false;

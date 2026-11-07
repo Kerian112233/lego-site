@@ -1,15 +1,25 @@
 'use client';
 
-import {useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {useLocale, useTranslations} from 'next-intl';
+import {CalendarIcon, ChevronDownIcon} from 'lucide-react';
+import type {DateRange} from 'react-day-picker';
+import {enUS, fr} from 'react-day-picker/locale';
 import {Button} from '@/components/ui/button';
+import {Calendar} from '@/components/ui/calendar';
 import {Input} from '@/components/ui/input';
 import {Textarea} from '@/components/ui/textarea';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover';
 import {TurnstileWidget} from '@/components/turnstile-widget';
 import {cn} from '@/lib/utils';
 import {clientConfig} from '@/config/client';
 import {submitBookingRequest} from '@/lib/data/booking';
 import {buildWhatsAppUrl} from '@/lib/data/whatsapp';
+import {parseISO, toISO, todayISO} from '@/lib/dates';
 import type {BookingPayload, ScooterModel} from '@/lib/data/types';
 
 type FormState = {
@@ -26,13 +36,15 @@ type FormState = {
 
 type Errors = Partial<Record<keyof FormState, string>>;
 
-const todayISO = () => new Date().toISOString().slice(0, 10);
-
 /** Vide en dev / Phase 1 → widget non rendu et vérification serveur désactivée. */
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
-const controlClass =
-  'flex h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-destructive';
+/**
+ * Habillage commun des contrôles (input, select, déclencheur de dates) : une
+ * seule ligne à changer pour faire bouger tout le formulaire.
+ */
+const fieldClass =
+  'h-12 w-full rounded-xl border-input bg-background px-4 text-base shadow-none transition-colors focus-visible:border-ring focus-visible:ring-4 focus-visible:ring-ring/15 aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive/20';
 
 /**
  * Formulaire de demande de réservation (Phase 2, branché base).
@@ -61,6 +73,7 @@ export function BookingForm({
   defaultEnd?: string;
 }) {
   const t = useTranslations('form');
+  const ts = useTranslations('search');
   const tw = useTranslations('whatsapp');
   const locale = useLocale();
 
@@ -156,14 +169,27 @@ export function BookingForm({
     setSubmitting(true);
     setFormError(null);
 
-    const result = await submitBookingRequest(payload, turnstileToken);
-
-    if (!result.ok) {
+    // Le token Turnstile est à usage unique : après tout échec, nouveau challenge.
+    const fail = (error: string) => {
       setSubmitting(false);
-      // Un token Turnstile est à usage unique : on relance un challenge.
       setTurnstileToken(null);
       setTurnstileKey((k) => k + 1);
-      setFormError(t(`errors.${result.error}`));
+      setFormError(t(`errors.${error}`));
+    };
+
+    let result: Awaited<ReturnType<typeof submitBookingRequest>>;
+    try {
+      result = await submitBookingRequest(payload, turnstileToken);
+    } catch {
+      // Échec de TRANSPORT de l'action serveur (réseau coupé sur mobile, page
+      // ouverte avant un nouveau déploiement…) : la promesse rejette côté
+      // client. Sans ce catch, le bouton restait bloqué sur « Envoi… ».
+      fail('server');
+      return;
+    }
+
+    if (!result.ok) {
+      fail(result.error);
       return;
     }
 
@@ -195,157 +221,349 @@ export function BookingForm({
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      noValidate
-      className="mx-auto mt-10 max-w-2xl space-y-5"
-    >
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Field id="first_name" label={t('firstName')} error={errors.first_name} required>
-          <Input
-            id="first_name"
-            value={values.first_name}
-            onChange={set('first_name')}
-            aria-invalid={!!errors.first_name}
-            autoComplete="given-name"
-          />
-        </Field>
-
-        <Field id="last_name" label={t('lastName')} error={errors.last_name} required>
-          <Input
-            id="last_name"
-            value={values.last_name}
-            onChange={set('last_name')}
-            aria-invalid={!!errors.last_name}
-            autoComplete="family-name"
-          />
-        </Field>
-
-        <Field id="model_id" label={t('model')} error={errors.model_id} required>
-          <select
+    <form onSubmit={onSubmit} noValidate className="mx-auto mt-10 max-w-2xl">
+      <div className="space-y-8 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-8">
+        <Fieldset title={t('sectionRental')}>
+          <Field
             id="model_id"
-            value={values.model_id}
-            onChange={set('model_id')}
-            aria-invalid={!!errors.model_id}
-            className={controlClass}
+            label={t('model')}
+            error={errors.model_id}
+            required
+            className="sm:col-span-2"
           >
-            <option value="" disabled>
-              {t('selectModel')}
-            </option>
-            {models.map((m) => (
-              <option key={m.id} value={m.id}>
-                {modelLabel(m)}
-              </option>
-            ))}
-          </select>
-        </Field>
+            <div className="relative">
+              <select
+                id="model_id"
+                value={values.model_id}
+                onChange={set('model_id')}
+                aria-invalid={!!errors.model_id}
+                className={cn(
+                  fieldClass,
+                  'appearance-none border bg-transparent pr-11 outline-none disabled:cursor-not-allowed disabled:opacity-50',
+                  !values.model_id && 'text-muted-foreground'
+                )}
+              >
+                <option value="" disabled>
+                  {t('selectModel')}
+                </option>
+                {models.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {modelLabel(m)}
+                  </option>
+                ))}
+              </select>
+              <ChevronDownIcon className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            </div>
+          </Field>
 
-        <Field id="start_date" label={t('startDate')} error={errors.start_date} required>
-          <Input
-            id="start_date"
-            type="date"
-            min={todayISO()}
-            value={values.start_date}
-            onChange={set('start_date')}
-            aria-invalid={!!errors.start_date}
-          />
-        </Field>
+          <Field
+            id="dates"
+            label={t('dates')}
+            error={errors.start_date ?? errors.end_date}
+            required
+            className="sm:col-span-2"
+          >
+            <DateRangeField
+              id="dates"
+              start={values.start_date}
+              end={values.end_date}
+              invalid={!!(errors.start_date || errors.end_date)}
+              placeholder={ts('datesPlaceholder')}
+              confirmLabel={t('datesConfirm')}
+              onChange={(start_date, end_date) =>
+                setValues((v) => ({...v, start_date, end_date}))
+              }
+            />
+          </Field>
+        </Fieldset>
 
-        <Field id="end_date" label={t('endDate')} error={errors.end_date} required>
-          <Input
-            id="end_date"
-            type="date"
-            min={values.start_date || todayISO()}
-            value={values.end_date}
-            onChange={set('end_date')}
-            aria-invalid={!!errors.end_date}
-          />
-        </Field>
+        <Separator />
 
-        <Field id="phone" label={t('phone')} error={errors.phone} required>
-          <Input
-            id="phone"
-            type="tel"
-            value={values.phone}
-            onChange={set('phone')}
-            aria-invalid={!!errors.phone}
-            autoComplete="tel"
-            placeholder="+66…"
-          />
-        </Field>
+        <Fieldset title={t('sectionContact')}>
+          <Field
+            id="first_name"
+            label={t('firstName')}
+            error={errors.first_name}
+            required
+          >
+            <Input
+              id="first_name"
+              className={fieldClass}
+              value={values.first_name}
+              onChange={set('first_name')}
+              aria-invalid={!!errors.first_name}
+              autoComplete="given-name"
+            />
+          </Field>
 
-        <Field id="email" label={`${t('email')} (${t('optional')})`} error={errors.email}>
-          <Input
+          <Field
+            id="last_name"
+            label={t('lastName')}
+            error={errors.last_name}
+            required
+          >
+            <Input
+              id="last_name"
+              className={fieldClass}
+              value={values.last_name}
+              onChange={set('last_name')}
+              aria-invalid={!!errors.last_name}
+              autoComplete="family-name"
+            />
+          </Field>
+
+          <Field id="phone" label={t('phone')} error={errors.phone} required>
+            <Input
+              id="phone"
+              type="tel"
+              className={fieldClass}
+              value={values.phone}
+              onChange={set('phone')}
+              aria-invalid={!!errors.phone}
+              autoComplete="tel"
+              placeholder="+66…"
+            />
+          </Field>
+
+          <Field
             id="email"
-            type="email"
-            value={values.email}
-            onChange={set('email')}
-            aria-invalid={!!errors.email}
-            autoComplete="email"
-          />
-        </Field>
+            label={t('email')}
+            hint={t('optional')}
+            error={errors.email}
+          >
+            <Input
+              id="email"
+              type="email"
+              className={fieldClass}
+              value={values.email}
+              onChange={set('email')}
+              aria-invalid={!!errors.email}
+              autoComplete="email"
+            />
+          </Field>
 
-        <Field id="nationality" label={`${t('nationality')} (${t('optional')})`}>
-          <Input
+          <Field
             id="nationality"
-            value={values.nationality}
-            onChange={set('nationality')}
-          />
-        </Field>
+            label={t('nationality')}
+            hint={t('optional')}
+            className="sm:col-span-2"
+          >
+            <Input
+              id="nationality"
+              className={fieldClass}
+              value={values.nationality}
+              onChange={set('nationality')}
+            />
+          </Field>
+        </Fieldset>
 
-        <Field
-          id="message"
-          label={`${t('message')} (${t('optional')})`}
-          className="sm:col-span-2"
-        >
-          <Textarea
+        <Separator />
+
+        <Fieldset title={t('sectionExtra')}>
+          <Field
             id="message"
-            rows={4}
-            value={values.message}
-            onChange={set('message')}
-          />
-        </Field>
+            label={t('message')}
+            hint={t('optional')}
+            className="sm:col-span-2"
+          >
+            <Textarea
+              id="message"
+              rows={4}
+              className="min-h-28 rounded-xl border-input px-4 py-3 text-base shadow-none focus-visible:border-ring focus-visible:ring-4 focus-visible:ring-ring/15"
+              value={values.message}
+              onChange={set('message')}
+            />
+          </Field>
+        </Fieldset>
+
+        <p className="text-xs text-muted-foreground">{t('requiredHint')}</p>
       </div>
 
-      {TURNSTILE_SITE_KEY && (
-        <TurnstileWidget
-          siteKey={TURNSTILE_SITE_KEY}
-          locale={locale}
-          resetKey={turnstileKey}
-          onToken={setTurnstileToken}
-        />
-      )}
+      <div className="mt-6 space-y-4">
+        {TURNSTILE_SITE_KEY && (
+          <TurnstileWidget
+            siteKey={TURNSTILE_SITE_KEY}
+            locale={locale}
+            resetKey={turnstileKey}
+            onToken={setTurnstileToken}
+          />
+        )}
 
-      <p className="text-sm text-muted-foreground">{t('redirectNote')}</p>
-
-      {formError && (
-        <p role="alert" className="text-sm font-medium text-destructive">
-          {formError}
-        </p>
-      )}
-
-      <Button type="submit" size="lg" className="w-full" disabled={submitting}>
-        {submitting ? t('submitting') : t('submit')}
-      </Button>
-
-      {fallbackUrl && (
-        <p className="text-center text-sm text-muted-foreground">
-          {t('fallbackNote')}{' '}
-          <a
-            href={fallbackUrl}
-            className="font-medium text-primary underline underline-offset-4"
+        {formError && (
+          <p
+            role="alert"
+            className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm font-medium text-destructive"
           >
-            {t('openWhatsApp')}
-          </a>
+            {formError}
+          </p>
+        )}
+
+        <Button
+          type="submit"
+          className="h-12 w-full rounded-xl text-base font-semibold"
+          disabled={submitting}
+        >
+          {submitting ? t('submitting') : t('submit')}
+        </Button>
+
+        <p className="text-center text-sm text-muted-foreground">
+          {t('redirectNote')}
         </p>
-      )}
+
+        {fallbackUrl && (
+          <p className="text-center text-sm text-muted-foreground">
+            {t('fallbackNote')}{' '}
+            <a
+              href={fallbackUrl}
+              className="font-medium text-primary underline underline-offset-4"
+            >
+              {t('openWhatsApp')}
+            </a>
+          </p>
+        )}
+      </div>
     </form>
   );
+}
+
+/**
+ * Sélecteur de plage arrivée → départ (un seul calendrier, comme la recherche
+ * du site). Il ne fait qu'écrire `start_date` / `end_date` dans l'état du
+ * formulaire : aucune navigation, aucune logique d'envoi ici.
+ */
+function DateRangeField({
+  id,
+  start,
+  end,
+  invalid,
+  placeholder,
+  confirmLabel,
+  onChange
+}: {
+  /** Relie le <label> du champ au déclencheur (et le message d'erreur). */
+  id: string;
+  start: string;
+  end: string;
+  invalid: boolean;
+  placeholder: string;
+  confirmLabel: string;
+  onChange: (start: string, end: string) => void;
+}) {
+  const locale = useLocale();
+  const [open, setOpen] = useState(false);
+  const [months, setMonths] = useState(1);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const update = () => setMonths(mq.matches ? 2 : 1);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
+  const range = useMemo<DateRange | undefined>(() => {
+    const from = parseISO(start);
+    return from ? {from, to: parseISO(end)} : undefined;
+  }, [start, end]);
+
+  const fmt = (d: Date) =>
+    new Intl.DateTimeFormat(locale, {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }).format(d);
+
+  const label = range?.from
+    ? range.to
+      ? `${fmt(range.from)} → ${fmt(range.to)}`
+      : fmt(range.from)
+    : placeholder;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        id={id}
+        aria-describedby={invalid ? `${id}-error` : undefined}
+        render={
+          <Button
+            type="button"
+            variant="outline"
+            aria-invalid={invalid}
+            className={cn(fieldClass, 'justify-start gap-3 font-normal')}
+          />
+        }
+      >
+        <CalendarIcon className="size-4 shrink-0 text-muted-foreground" />
+        <span className={cn('truncate', !range?.from && 'text-muted-foreground')}>
+          {label}
+        </span>
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-auto max-w-[calc(100vw-2rem)] p-0"
+        align="start"
+      >
+        {/* Dates souvent PRÉ-REMPLIES (flux « dates d'abord ») :
+            - `defaultMonth` ouvre sur la période choisie, pas sur le mois courant ;
+            - `resetOnSelect` : sur une période complète, un tap en démarre une
+              NOUVELLE au lieu d'allonger l'ancienne (12→15, tap 20 puis 25 donnait
+              12→25 — 13 jours envoyés au lieu de 5). */}
+        <Calendar
+          mode="range"
+          selected={range}
+          defaultMonth={range?.from}
+          resetOnSelect
+          onSelect={(next) =>
+            onChange(
+              next?.from ? toISO(next.from) : '',
+              next?.to ? toISO(next.to) : ''
+            )
+          }
+          numberOfMonths={months}
+          disabled={{before: parseISO(todayISO()) ?? new Date()}}
+          locale={locale === 'fr' ? fr : enUS}
+          className="[--cell-size:2.5rem] p-3"
+          autoFocus
+        />
+        <div className="border-t border-border p-3">
+          <Button
+            type="button"
+            size="lg"
+            className="h-11 w-full rounded-xl"
+            disabled={!range?.from || !range?.to}
+            onClick={() => setOpen(false)}
+          >
+            {confirmLabel}
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+/** Bloc de champs : un titre, puis une grille 1 → 2 colonnes. */
+function Fieldset({
+  title,
+  children
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <h3 className="text-base font-semibold">{title}</h3>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">{children}</div>
+    </section>
+  );
+}
+
+function Separator() {
+  return <div className="h-px bg-border" />;
 }
 
 function Field({
   id,
   label,
+  hint,
   error,
   required,
   className,
@@ -353,19 +571,35 @@ function Field({
 }: {
   id: string;
   label: string;
+  /** Mention discrète à droite du label (ex. « optionnel »). */
+  hint?: string;
   error?: string;
   required?: boolean;
   className?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn('space-y-1.5', className)}>
-      <label htmlFor={id} className="text-sm font-medium">
-        {label}
-        {required && <span className="text-destructive"> *</span>}
-      </label>
+    <div className={cn('space-y-2', className)}>
+      <div className="flex items-baseline justify-between gap-2">
+        <label htmlFor={id} className="text-sm font-medium">
+          {label}
+          {required && <span className="text-destructive"> *</span>}
+          {/* Le « optionnel » visible est hors du label (aligné à droite) :
+              copie lue par les lecteurs d'écran dans le nom du champ. */}
+          {hint && <span className="sr-only"> ({hint})</span>}
+        </label>
+        {hint && (
+          <span aria-hidden className="text-xs text-muted-foreground">
+            {hint}
+          </span>
+        )}
+      </div>
       {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && (
+        <p id={`${id}-error`} className="text-xs font-medium text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

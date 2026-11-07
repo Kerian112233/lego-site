@@ -9,6 +9,7 @@ import {fontVarClassNames} from '@/lib/fonts';
 import {SiteHeader} from '@/components/layout/site-header';
 import {SiteFooter} from '@/components/layout/site-footer';
 import {FloatingWhatsApp} from '@/components/layout/floating-whatsapp';
+import {HashScroll} from '@/components/layout/hash-scroll';
 import '../globals.css';
 
 /**
@@ -30,7 +31,10 @@ export async function generateMetadata({
   const activeLocale: Locale = hasLocale(routing.locales, locale)
     ? locale
     : routing.defaultLocale;
-  const description = clientConfig.content[activeLocale].hero.subtitle;
+  // L'accroche du hero est éditoriale ; seule, elle ne décrit pas le service.
+  // On y accole la ligne pratique quand elle existe, pour une description utile.
+  const {subtitle, note} = clientConfig.content[activeLocale].hero;
+  const description = note ? `${subtitle} ${note}` : subtitle;
 
   // hreflang : une entrée par locale + x-default.
   const languages = Object.fromEntries(
@@ -89,6 +93,7 @@ export default async function LocaleLayout({
           <main className="flex-1">{children}</main>
           <SiteFooter locale={locale} />
           <FloatingWhatsApp />
+          <HashScroll />
         </NextIntlClientProvider>
       </body>
     </html>

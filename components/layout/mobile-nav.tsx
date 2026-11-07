@@ -9,6 +9,8 @@ import {Button} from '@/components/ui/button';
 import {clientConfig} from '@/config/client';
 import {buildWhatsAppUrl} from '@/lib/data/whatsapp';
 import type {Locale} from '@/i18n/routing';
+import {AnchorLink} from './anchor-link';
+import {navLinks} from './nav-links';
 import {LanguageSwitcher} from './language-switcher';
 
 /**
@@ -47,7 +49,7 @@ export function MobileNav() {
         type="button"
         aria-label={t('nav.menu')}
         onClick={() => setOpen(true)}
-        className="inline-flex size-9 items-center justify-center rounded-md text-foreground md:hidden"
+        className="inline-flex size-9 items-center justify-center rounded-md text-foreground lg:hidden"
       >
         <MenuIcon className="size-5" />
       </button>
@@ -56,7 +58,7 @@ export function MobileNav() {
           résoudre le `fixed` par rapport au header (64px) au lieu du viewport. */}
       {open &&
         createPortal(
-          <div className="fixed inset-0 z-50 md:hidden">
+          <div className="fixed inset-0 z-50 lg:hidden">
             <div
               className="absolute inset-0 bg-black/50"
               onClick={() => setOpen(false)}
@@ -78,18 +80,31 @@ export function MobileNav() {
 
             <div className="flex-1 overflow-y-auto overscroll-contain">
               <nav className="flex flex-col px-4 pt-3 text-base font-medium">
-                <Link
-                  href="/scooters"
-                  className="rounded-md py-2.5 text-foreground hover:text-primary"
-                >
-                  {t('nav.scooters')}
-                </Link>
-                <Link
-                  href="/reserver"
-                  className="rounded-md py-2.5 text-foreground hover:text-primary"
-                >
-                  {t('nav.book')}
-                </Link>
+                {navLinks.map((link) => {
+                  const className =
+                    'rounded-md py-2.5 text-foreground hover:text-primary';
+                  /* Une ancre ne change pas le pathname : l'effet de fermeture
+                     sur `pathname` ne se déclencherait pas → fermeture explicite. */
+                  return link.anchor ? (
+                    <AnchorLink
+                      key={link.key}
+                      href={link.href}
+                      onNavigate={() => setOpen(false)}
+                      className={className}
+                    >
+                      {t(`nav.${link.key}`)}
+                    </AnchorLink>
+                  ) : (
+                    <Link
+                      key={link.key}
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      className={className}
+                    >
+                      {t(`nav.${link.key}`)}
+                    </Link>
+                  );
+                })}
               </nav>
 
               <div className="px-4 py-3">

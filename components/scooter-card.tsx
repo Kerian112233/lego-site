@@ -5,6 +5,7 @@ import {useTranslations} from 'next-intl';
 import {Link} from '@/i18n/navigation';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardFooter} from '@/components/ui/card';
+import {DateSearch} from '@/components/date-search';
 import {cn} from '@/lib/utils';
 import {clientConfig} from '@/config/client';
 import type {ScooterModel, SeasonKey} from '@/lib/data/types';
@@ -92,9 +93,6 @@ export function ScooterCard({
           loading="lazy"
           className={cn('size-full object-cover', !isAvailable && 'grayscale')}
         />
-        <span className="absolute left-3 top-3 rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium shadow-sm">
-          {model.category}
-        </span>
       </div>
 
       <CardContent className="flex flex-1 flex-col gap-3">
@@ -113,7 +111,7 @@ export function ScooterCard({
               className="flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2 text-left transition-colors hover:bg-muted/70"
             >
               <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Modèle
+                {t('variantLabel')}
               </span>
               <span className="flex flex-1 items-center justify-between gap-2">
                 <span className="text-sm font-medium text-foreground">
@@ -201,8 +199,17 @@ export function ScooterCard({
         </div>
       </CardContent>
 
-      <CardFooter>
-        {isAvailable ? (
+      <CardFooter className="flex-col items-stretch gap-2">
+        {!range ? (
+          /* Pas de dates → on ne peut RIEN affirmer sur la dispo : le CTA ouvre
+             le calendrier, et c'est lui qui mène au catalogue daté. */
+          <DateSearch
+            variant="cta"
+            triggerLabel={ts('checkAvailability')}
+            submitLabel={ts('checkAvailability')}
+            extraQuery={{model: model.id}}
+          />
+        ) : isAvailable ? (
           <Button
             className="w-full"
             nativeButton={false}

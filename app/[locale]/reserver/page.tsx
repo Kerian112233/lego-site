@@ -1,11 +1,13 @@
 import type {Metadata} from 'next';
 import {setRequestLocale} from 'next-intl/server';
+import {redirect} from '@/i18n/navigation';
 import {resolveLocale} from '@/i18n/routing';
 import {clientConfig} from '@/config/client';
 import {getScooterModels} from '@/lib/data/models';
 import {buildPageMetadata} from '@/lib/seo';
 import {Section} from '@/components/section';
 import {BookingForm} from '@/components/booking-form';
+import {dateParam} from '@/lib/dates';
 
 export async function generateMetadata({
   params
@@ -27,15 +29,33 @@ export default async function ReserverPage({
   searchParams
 }: {
   params: Promise<{locale: string}>;
-  searchParams: Promise<{model?: string; start?: string; end?: string}>;
+  /** Next renvoie un tableau pour une clé répétée : jamais de `string` supposé. */
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const {locale} = await params;
   setRequestLocale(locale);
 
   const activeLocale = resolveLocale(locale);
   const content = clientConfig.content[activeLocale];
+  const query = await searchParams;
+  // Paramètres d'URL nettoyés : clé répétée ou date impossible (2026-11-31)
+  // → ignorés, au lieu de faire planter le rendu ou d'envoyer une date fausse.
+  const model = typeof query.model === 'string' ? query.model : undefined;
+  const start = dateParam(query.start);
+  const end = dateParam(query.end);
+
+  /**
+   * Garde-fou du flux « dates d'abord » : un lien vers un MODÈLE précis sans
+   * période (URL partagée, favori, ancien lien) repasse par le catalogue daté.
+   * Plus aucune UI ne produit ce cas — c'est la ceinture de sécurité.
+   * L'accès générique à /reserver (sans `model`) reste ouvert : le visiteur y
+   * choisit modèle ET dates dans le formulaire.
+   */
+  if (model && !(start && end)) {
+    redirect({href: {pathname: '/scooters', query: {model}}, locale});
+  }
+
   const models = await getScooterModels();
-  const {model, start, end} = await searchParams;
 
   return (
     <Section title={content.reserve.title} subtitle={content.reserve.subtitle}>

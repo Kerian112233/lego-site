@@ -9,7 +9,7 @@ export function AllInclusive({
 }) {
   return (
     <Section id="all-inclusive" title={content.title} subtitle={content.subtitle}>
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {content.items.map((item) => (
           <Card key={item.title} className="h-full">
             <CardContent>
