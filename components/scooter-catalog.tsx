@@ -79,6 +79,7 @@ function FamilyCard({
   onClick: () => void;
 }) {
   const ts = useTranslations('search');
+  const tc = useTranslations('catalog');
   const rep = item.type === 'group' ? item.variants[0] : item.model;
   const cover = rep.image_url ?? '/scooters/placeholder.svg';
 
@@ -109,25 +110,33 @@ function FamilyCard({
       <div className="absolute bottom-0 left-0 right-0 p-3">
         <p className="text-sm font-bold leading-tight text-white">{rep.name}</p>
         <p className="mt-0.5 text-xs text-white/75">
-          {locale === 'fr' ? 'Dès' : 'From'}{' '}
-          <span className="font-semibold text-white">{nf.format(minPrice)} ฿</span>
-          {locale === 'fr' ? ' / mois' : ' / mo'}
+          {/* Prix/JOUR (basse saison) : l'ancien libellé « / mois » trompait le client. */}
+          {tc('fromShort')}{' '}
+          <span className="font-semibold text-white">{nf.format(minPrice)} ฿</span>{' '}
+          {tc('perDay')}
         </p>
       </div>
-      {item.type === 'group' && (
-        <span className="absolute right-2 top-2 rounded-full bg-black/50 px-2 py-0.5 text-xs text-white">
-          {item.variants.length} {locale === 'fr' ? 'modèles' : 'models'}
-        </span>
-      )}
-      {availableCount !== undefined && (
-        <span
-          className={cn(
-            'absolute left-2 top-2 rounded-full px-2 py-0.5 text-xs font-medium text-white',
-            availableCount === 0 ? 'bg-black/60' : 'bg-primary'
+      {/* Pastilles du haut dans UNE rangée qui passe à la ligne : sur mobile
+          (2 cartes par ligne), « 14 dispos » et « 2 modèles » positionnées
+          séparément se chevauchaient. */}
+      {(availableCount !== undefined || item.type === 'group') && (
+        <div className="absolute left-2 right-2 top-2 flex flex-wrap items-start justify-between gap-1">
+          {availableCount !== undefined && (
+            <span
+              className={cn(
+                'rounded-full px-2 py-0.5 text-xs font-medium text-white',
+                availableCount === 0 ? 'bg-black/60' : 'bg-primary'
+              )}
+            >
+              {ts('availableBadge', {count: availableCount})}
+            </span>
           )}
-        >
-          {ts('availableBadge', {count: availableCount})}
-        </span>
+          {item.type === 'group' && (
+            <span className="ml-auto rounded-full bg-black/50 px-2 py-0.5 text-xs text-white">
+              {tc('variantsCount', {count: item.variants.length})}
+            </span>
+          )}
+        </div>
       )}
     </button>
   );
