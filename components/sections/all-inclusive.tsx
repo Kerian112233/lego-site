@@ -5,7 +5,7 @@ import type {SiteContent} from '@/content/types';
 export function AllInclusive({
   content
 }: {
-  content: SiteContent['allInclusive'];
+  content: NonNullable<SiteContent['allInclusive']>;
 }) {
   return (
     <Section id="all-inclusive" title={content.title} subtitle={content.subtitle}>

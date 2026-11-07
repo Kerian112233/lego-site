@@ -50,7 +50,9 @@ export interface SiteContent {
     subtitle: string;
     steps: ContentItem[];
   };
-  allInclusive: {
+  /** Section « formule tout-compris » — OPTIONNELLE : absente du contenu
+   *  d'un client = section non affichée (retirée pour LEXO le 2026-11-07). */
+  allInclusive?: {
     title: string;
     subtitle: string;
     items: ContentItem[];

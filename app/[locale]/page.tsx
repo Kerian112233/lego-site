@@ -31,7 +31,7 @@ export default async function HomePage({
         locale={locale as Locale}
       />
       <HowItWorks content={content.howItWorks} />
-      <AllInclusive content={content.allInclusive} />
+      {content.allInclusive && <AllInclusive content={content.allInclusive} />}
       <Options content={content.options} />
       <Reviews content={content.reviews} />
       <Faq content={content.faq} />
