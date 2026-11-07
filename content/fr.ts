@@ -36,24 +36,6 @@ export const fr: SiteContent = {
       }
     ]
   },
-  allInclusive: {
-    title: 'La formule tout-compris',
-    subtitle: 'Un seul tarif, aucune surprise.',
-    items: [
-      {
-        title: 'Retrait au shop',
-        description: 'Récupérez votre scooter prêt à rouler à notre boutique de Kathu.'
-      },
-      {
-        title: '2 casques fournis',
-        description: 'Casques homologués pour vous et votre passager.'
-      },
-      {
-        title: 'Assistance 7j/7',
-        description: 'Une question, une panne ? On répond sur WhatsApp.'
-      }
-    ]
-  },
   options: {
     title: 'Options & accessoires',
     subtitle: 'Personnalisez votre scooter selon vos envies.',

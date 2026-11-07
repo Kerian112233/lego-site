@@ -33,24 +33,6 @@ export const en: SiteContent = {
       }
     ]
   },
-  allInclusive: {
-    title: 'The all-inclusive deal',
-    subtitle: 'One price, no surprises.',
-    items: [
-      {
-        title: 'Shop pickup',
-        description: 'Collect your ready-to-ride scooter at our Kathu shop.'
-      },
-      {
-        title: '2 helmets provided',
-        description: 'Certified helmets for you and your passenger.'
-      },
-      {
-        title: '7-day support',
-        description: 'A question or a breakdown? We answer on WhatsApp.'
-      }
-    ]
-  },
   options: {
     title: 'Options & accessories',
     subtitle: 'Customise your scooter the way you like.',
